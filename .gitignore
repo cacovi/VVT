@@ -1,0 +1,9 @@
+data/world/otgpremium.otbm
+*.dll
+data/world/otgpremium.otbm
+*.exe
+.vscode/
+build/
+cmake-build-debug/
+.idea/
+tfs
