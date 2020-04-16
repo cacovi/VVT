@@ -806,6 +806,7 @@ void Game::playerMoveCreature(Player* player, Creature* movingCreature, const Po
 				return;
 			}
 		}
+		movingCreature->setLastPosition(movingCreature->getPosition()); 
 	}
 
 	if (!g_events->eventPlayerOnMoveCreature(player, movingCreature, movingCreaturePos, toPos)) {
@@ -816,6 +817,8 @@ void Game::playerMoveCreature(Player* player, Creature* movingCreature, const Po
 	if (ret != RETURNVALUE_NOERROR) {
 		player->sendCancelMessage(ret);
 	}
+
+	player->setLastPosition(player->getPosition());
 }
 
 ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, uint32_t flags /*= 0*/)
