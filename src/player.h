@@ -1657,6 +1657,7 @@ class Player final : public Creature, public Cylinder
 		int32_t coinBalance = 0;
 		uint16_t expBoostStamina = 0;
 
+		uint16_t lastTimeStamina = 0;
 		uint16_t lastStatsTrainingTime = 0;
 		uint16_t staminaMinutes = 2520;
 		std::vector<uint8_t> blessings = { 0, 0, 0, 0, 0, 0, 0, 0 };

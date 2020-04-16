@@ -1562,6 +1562,16 @@ void Player::onThink(uint32_t interval)
 		}
 	}
 
+	if (getZone() == ZONE_PROTECTION) {
+		lastTimeStamina += interval / 1000;
+		if (lastTimeStamina >= 360) {
+			lastTimeStamina = 0;
+			staminaMinutes = std::min<uint16_t>(2520, staminaMinutes + 2);
+		}
+	} else if (lastTimeStamina > 0) {
+		lastTimeStamina = 0;
+	}
+
 	if (g_game.getWorldType() != WORLD_TYPE_PVP_ENFORCED) {
 		checkSkullTicks(interval / 1000);
 	}
