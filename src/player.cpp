@@ -1566,7 +1566,7 @@ void Player::onThink(uint32_t interval)
 		lastTimeStamina += interval / 1000;
 		if (lastTimeStamina >= 120) {
 			lastTimeStamina = 0;
-			staminaMinutes = std::min<uint16_t>(2520, staminaMinutes + 1);
+			staminaMinutes = std::min<uint16_t>(2520, staminaMinutes + 5);
 		}
 	} else if (lastTimeStamina > 0) {
 		lastTimeStamina = 0;
