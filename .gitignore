@@ -7,3 +7,6 @@ build/
 cmake-build-debug/
 .idea/
 tfs
+src/Faceless.zip
+src/storages(2).lua
+src/npc.rar
