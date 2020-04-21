@@ -473,6 +473,8 @@ bool Spell::configureSpell(const pugi::xml_node& node)
 			group = SPELLGROUP_SUPPORT;
 		} else if (tmpStr == "special" || tmpStr == "4") {
 			group = SPELLGROUP_SPECIAL;
+		} else if (tmpStr == "ultimate" || tmpStr == "6") {
+			group = SPELLGROUP_ULTIMATE;
 		} else {
 			std::cout << "[Warning - Spell::configureSpell] Unknown group: " << attr.as_string() << std::endl;
 		}
@@ -494,6 +496,8 @@ bool Spell::configureSpell(const pugi::xml_node& node)
 			secondaryGroup = SPELLGROUP_SUPPORT;
 		} else if (tmpStr == "special" || tmpStr == "4") {
 			secondaryGroup = SPELLGROUP_SPECIAL;
+		} else if (tmpStr == "ultimate" || tmpStr == "6") {
+			group = SPELLGROUP_ULTIMATE;
 		} else {
 			std::cout << "[Warning - Spell::configureSpell] Unknown secondarygroup: " << attr.as_string() << std::endl;
 		}

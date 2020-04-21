@@ -160,6 +160,7 @@ enum SpellGroup_t : uint8_t {
 	SPELLGROUP_SUPPORT = 3,
 	SPELLGROUP_SPECIAL = 4,
 	SPELLGROUP_CONJURE = 5,
+	SPELLGROUP_ULTIMATE = 6,
 };
 
 // New Prey

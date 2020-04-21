@@ -1324,6 +1324,8 @@ SpellGroup_t stringToSpellGroup(std::string value)
 		return SPELLGROUP_SUPPORT;
 	} else if (tmpStr == "special" || tmpStr == "4") {
 		return SPELLGROUP_SPECIAL;
+	} else if (tmpStr == "ultimate" || tmpStr == "6") {
+		return SPELLGROUP_ULTIMATE;
 	}
 
 	return SPELLGROUP_NONE;
