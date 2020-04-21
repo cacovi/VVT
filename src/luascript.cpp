@@ -2647,6 +2647,8 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "setInstantRewardTokens", LuaScriptInterface::luaPlayerSetInstantRewardTokenBalance);
 	registerMethod("Player", "sendStats", LuaScriptInterface::luaPlayerSendStats);
 
+	registerMethod("Player", "calledSpell", LuaScriptInterface::luaPlayerCalledSpell);
+
 	registerMethod("Player", "getPreyState", LuaScriptInterface::luaPlayerGetPreyState);
 	registerMethod("Player", "changePreyState", LuaScriptInterface::luaPlayerChangePreyState);
 
@@ -10737,6 +10739,20 @@ int LuaScriptInterface::luaPlayerSendStats(lua_State *L) {
         lua_pushnil(L);
     }
     return 1;
+}
+
+int LuaScriptInterface::luaPlayerCalledSpell(lua_State* L)
+{
+	// player:calledSpell(text)
+	Player* player =  getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	const std::string& text = getString(L, 2);
+	pushBoolean(L, g_game.playerCalledSpell(player, text));
+	return 1;
 }
 
 int LuaScriptInterface::luaPlayerCanCast(lua_State* L)

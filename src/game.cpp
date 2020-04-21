@@ -3747,6 +3747,13 @@ bool Game::playerSaySpell(Player* player, SpeakClasses type, const std::string& 
 	return false;
 }
 
+bool Game::playerCalledSpell(Player* player, const std::string& text)
+{
+	std::string words = text;
+	TalkActionResult_t result = g_spells->playerSaySpell(player, words, false);
+	return result == TALKACTION_BREAK; 
+}
+
 void Game::playerWhisper(Player* player, const std::string& text)
 {
 	SpectatorHashSet spectators;

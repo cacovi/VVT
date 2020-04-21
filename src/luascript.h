@@ -1047,6 +1047,7 @@ class LuaScriptInterface
 		static int luaPlayerSetInstantRewardTokenBalance(lua_State* L);
 
 		static int luaPlayerSendStats(lua_State* L);
+		static int luaPlayerCalledSpell(lua_State* L);
 
 		static int luaPlayerGetPreyState(lua_State* L);
 		static int luaPlayerChangePreyState(lua_State* L);

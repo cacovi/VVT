@@ -45,7 +45,7 @@ Spells::~Spells()
 	clear(false);
 }
 
-TalkActionResult_t Spells::playerSaySpell(Player* player, std::string& words)
+TalkActionResult_t Spells::playerSaySpell(Player* player, std::string& words, bool called)
 {
 	std::string str_words = words;
 
@@ -86,13 +86,18 @@ TalkActionResult_t Spells::playerSaySpell(Player* player, std::string& words)
 		}
 	}
 
-	if (instantSpell->playerCastInstant(player, param)) {
-		words = instantSpell->getWords();
 
-		if (instantSpell->getHasParam() && !param.empty()) {
-			words += " \"" + param + "\"";
-		}
+	if (called) {
+		if (instantSpell->playerCastInstant(player, param)) {
+			words = instantSpell->getWords();
 
+			if (instantSpell->getHasParam() && !param.empty()) {
+				words += " \"" + param + "\"";
+			}
+
+			return TALKACTION_BREAK;
+		}	
+	} else {
 		return TALKACTION_BREAK;
 	}
 

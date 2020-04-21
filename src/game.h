@@ -550,6 +550,7 @@ class Game
 		std::forward_list<Item*> toDecayItems;
 		std::forward_list<Item*> toImbuedItems;
 
+		bool playerCalledSpell(Player* player, const std::string& text);
 	protected:
 		void checkImbuements();
 
