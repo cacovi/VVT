@@ -110,7 +110,9 @@ enum AttrTypes_t {
 	ATTR_UNMOVEABLEDITEM = 37,
 	ATTR_WRAPCONTAINER = 38,
 
-	ATTR_CUSTOM_ATTRIBUTES = 39
+	ATTR_CUSTOM_ATTRIBUTES = 39,
+
+	ATTR_QUICKLOOT = 40,
 };
 
 enum Attr_ReadValue {
@@ -505,12 +507,22 @@ class ItemAttributes
 			return false;
 		}
 
+		const static uint32_t intAttributeTypes = ITEM_ATTRIBUTE_ACTIONID | ITEM_ATTRIBUTE_UNIQUEID | ITEM_ATTRIBUTE_DATE
+			| ITEM_ATTRIBUTE_WEIGHT | ITEM_ATTRIBUTE_ATTACK | ITEM_ATTRIBUTE_DEFENSE | ITEM_ATTRIBUTE_EXTRADEFENSE
+			| ITEM_ATTRIBUTE_ARMOR | ITEM_ATTRIBUTE_HITCHANCE | ITEM_ATTRIBUTE_SHOOTRANGE | ITEM_ATTRIBUTE_OWNER
+			| ITEM_ATTRIBUTE_DURATION | ITEM_ATTRIBUTE_DECAYSTATE | ITEM_ATTRIBUTE_CORPSEOWNER | ITEM_ATTRIBUTE_CHARGES
+			| ITEM_ATTRIBUTE_FLUIDTYPE | ITEM_ATTRIBUTE_DOORID | ITEM_ATTRIBUTE_IMBUINGSLOTS | ITEM_ATTRIBUTE_OPENCONTAINER
+			| ITEM_ATTRIBUTE_QUICKLOOT | ITEM_ATTRIBUTE_UNMOVEABLEDITEM | ITEM_ATTRIBUTE_WRAPCONTAINER;
+		const static uint32_t stringAttributeTypes = ITEM_ATTRIBUTE_DESCRIPTION | ITEM_ATTRIBUTE_TEXT | ITEM_ATTRIBUTE_WRITER
+			| ITEM_ATTRIBUTE_NAME | ITEM_ATTRIBUTE_ARTICLE | ITEM_ATTRIBUTE_PLURALNAME | ITEM_ATTRIBUTE_SPECIAL;
+
+
 	public:
 		static bool isIntAttrType(itemAttrTypes type) {
-			return (type & 0x27FFE13) != 0;
+			return (type & intAttributeTypes) == type;
 		}
 		static bool isStrAttrType(itemAttrTypes type) {
-			return (type & 0x8001EC) != 0;
+			return (type & stringAttributeTypes) == type;
 		}
 		inline static bool isCustomAttrType(itemAttrTypes type) {
 			return (type & 0x80000000) != 0;
@@ -615,29 +627,6 @@ class Item : virtual public Thing
 		}
 		bool getIsLootTrackeable() {
 			return isLootTrackeable;
-		}
-
-		uint32_t getQuickLootFlags() const
-		{
-			if (!attributes) {
-				return 0;
-			}
-
-			if (!attributes->hasAttribute(ITEM_ATTRIBUTE_CUSTOM)) {
-				return 0;
-			}
-
-			uint32_t flags = 0;
-			for (uint8_t i = LOOT_START; i < LOOT_END; i++)
-			{
-				const ItemAttributes::CustomAttribute* attr = getCustomAttribute("quickLootCategory" + std::to_string(i));
-				if (attr != nullptr) {
-					flags |= (1 << i);
-					continue;
-				}
-			}
-
-			return flags;
 		}
 
 		void removeAttribute(itemAttrTypes type) {
@@ -861,8 +850,8 @@ class Item : virtual public Thing
 		// Returns the player that is holding this item in his inventory
 		Player* getHoldingPlayer() const;
 
-		QuickLootCategory_t getLootCategory() const {
-			return items[id].quickLootCategory;
+		LootType_t getLootCategory() const {
+			return items[id].lootType;
 		}
 		WeaponType_t getWeaponType() const {
 			return items[id].weaponType;

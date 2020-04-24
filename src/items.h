@@ -244,7 +244,7 @@ class ItemType
 
 		MagicEffectClasses magicEffect = CONST_ME_NONE;
 		Direction bedPartnerDir = DIRECTION_NONE;
-		QuickLootCategory_t quickLootCategory = LOOT_NONE;
+		LootType_t lootType = LOOT_UNASSIGNED;
 		WeaponType_t weaponType = WEAPON_NONE;
 		Ammo_t ammoType = AMMO_NONE;
 		ShootType_t shootType = CONST_ANI_NONE;

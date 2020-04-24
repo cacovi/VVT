@@ -1175,6 +1175,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 			}
 		}
 
+		sendUpdateQuickLoot();
 		g_game.checkPlayersRecord();
 		IOLoginData::updateOnlineStatus(guid, true);
 	}
@@ -5317,3 +5318,145 @@ bool Player::hasActivePreyBonus(BonusType type, Creature* source)
 	}
 	return false;
 }
+
+void Player::manageQuicklootContainer(LootType_t loottype, Container* container /* = nullptr*/, bool isLogin /* = false */)
+{
+	Cylinder* parent = nullptr;
+	Container* c = quicklootContainers[loottype];
+	if (c && !c->isRemoved()) {
+		uint32_t flags = c->getIntAttr(ITEM_ATTRIBUTE_QUICKLOOT);
+		flags &= ~(1 << loottype);
+		if (flags == 0) {
+			c->removeAttribute(ITEM_ATTRIBUTE_QUICKLOOT);
+		} else {
+			c->setIntAttr(ITEM_ATTRIBUTE_QUICKLOOT, flags);
+		}
+
+		parent = c->getParent();
+		if (parent) {
+			parent->updateThing(c, c->getID(), c->getItemCount());
+		}
+
+
+		quicklootContainers.erase(loottype);
+	}
+
+	if (container) {
+		uint32_t quicklootOffset = container->getIntAttr(ITEM_ATTRIBUTE_QUICKLOOT);
+		quicklootContainers[loottype] = container;
+		if (!hasBitSet(1 << loottype, quicklootOffset) && !isLogin) {
+			container->setIntAttr(ITEM_ATTRIBUTE_QUICKLOOT, quicklootOffset | static_cast<uint32_t>(1 << loottype));
+			parent = container->getParent();
+			if (parent) {
+				parent->updateThing(container, container->getID(), container->getItemCount());
+			}
+		}
+
+		container->incrementReferenceCounter();
+	} else {
+		quicklootContainers.erase(loottype);
+	}
+
+	if (!isLogin) {
+		sendUpdateQuickLoot();
+	}
+
+}
+
+std::vector<std::pair<LootType_t, Container*>> Player::getLootContainers()
+{
+	bool needUpdate = false;
+	std::vector<std::pair<LootType_t, Container*>> v;
+	uint32_t quicklootOffset = 0;
+	for (const auto& it : quicklootContainers) {
+		Container* c = quicklootContainers[it.first];
+		if (c && !c->isRemoved() && c->getHoldingPlayer() == this) {
+			quicklootOffset = it.second->getIntAttr(ITEM_ATTRIBUTE_QUICKLOOT);
+			// fix attribute
+			if (hasBitSet(1 << it.first, quicklootOffset)) {
+				v.emplace_back(it.first, it.second);
+			} else {
+				quicklootContainers.erase(it.first);
+				needUpdate = true;
+			}
+		} else {
+			quicklootContainers.erase(it.first);
+			needUpdate = true;
+		}
+	}
+
+	if (needUpdate) {
+		createSchedulerTask(2000, std::bind(&Player::sendUpdateQuickLoot, this));
+	}
+
+	return v;
+}
+
+Container* Player::getContainerLoot(LootType_t loottype)
+{
+	Container* backpack = quicklootContainers[loottype];
+	if (backpack && !backpack->isRemoved()) {
+		if (backpack->getHoldingPlayer() != this) {
+			if (Cylinder* parent = backpack->getParent())
+				parent->updateThing(backpack, backpack->getID(), backpack->getItemCount());
+
+			quicklootContainers.erase(loottype);
+			sendUpdateQuickLoot();
+			return nullptr;
+		}
+
+		return backpack;
+	}
+
+	if (useMainContainer) {
+		Thing* thing = getThing(CONST_SLOT_BACKPACK);
+		if (thing) {
+			backpack = thing->getContainer();
+			if (backpack) {
+				return backpack;
+			}
+		}		
+	}
+
+
+	return nullptr;
+}
+
+bool Player::acceptLoot(Item* item)
+{
+	auto it = std::find(itemLootVec.begin(), itemLootVec.end(), item->getID());
+	bool inVector = it != itemLootVec.end();
+	if (skippedLoot) {
+		return inVector == false;
+	}
+
+	return inVector;
+}
+
+void Player::checkLootContainers(const Item* item)
+{
+	const Container* container = item->getContainer();
+	if (!container) {
+		return;
+	}
+
+	bool shouldSend = false;
+
+	for (const auto& it : quicklootContainers) {
+		bool remove = false;
+		if (item->getHoldingPlayer() != this && (item == it.second || container->isHoldingItem(it.second))) {
+			remove = true;
+		}
+
+		if (remove) {
+			shouldSend = true;
+			manageQuicklootContainer(it.first, nullptr, true);
+		}
+	}
+
+	if (shouldSend) {
+		sendUpdateQuickLoot();
+	}
+
+}
+

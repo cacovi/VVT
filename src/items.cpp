@@ -557,57 +557,57 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 		} else if (tmpStrValue == "quicklootcategory") {
 			tmpStrValue = asLowerCaseString(valueAttribute.as_string());
 			if (tmpStrValue == "none") {
-				it.quickLootCategory = LOOT_NONE;
+				it.lootType = LOOT_NONE;
 			} else if (tmpStrValue == "unassigned") {
-				it.quickLootCategory = LOOT_UNASSIGNED;
+				it.lootType = LOOT_UNASSIGNED;
 			} else if (tmpStrValue == "gold") {
-				it.quickLootCategory = LOOT_GOLD;
+				it.lootType = LOOT_GOLD;
 			} else if (tmpStrValue == "armor") {
-				it.quickLootCategory = LOOT_ARMOR;
+				it.lootType = LOOT_ARMOR;
 			} else if (tmpStrValue == "amulet") {
-				it.quickLootCategory = LOOT_AMULET;
+				it.lootType = LOOT_AMULET;
 			} else if (tmpStrValue == "boots") {
-				it.quickLootCategory = LOOT_BOOTS;
+				it.lootType = LOOT_BOOTS;
 			} else if (tmpStrValue == "container") {
-				it.quickLootCategory = LOOT_CONTAINER;
+				it.lootType = LOOT_CONTAINER;
 			} else if (tmpStrValue == "creatureproduct") {
-				it.quickLootCategory = LOOT_CREATURE_PRODUCT;
+				it.lootType = LOOT_CREATURE_PRODUCT;
 			} else if (tmpStrValue == "decoration") {
-				it.quickLootCategory = LOOT_DECORATION;
+				it.lootType = LOOT_DECORATION;
 			} else if (tmpStrValue == "food") {
-				it.quickLootCategory = LOOT_FOOD;
+				it.lootType = LOOT_FOOD;
 			} else if (tmpStrValue == "helmet") {
-				it.quickLootCategory = LOOT_HELMET;
+				it.lootType = LOOT_HELMET;
 			} else if (tmpStrValue == "legs") {
-				it.quickLootCategory = LOOT_LEGS;
+				it.lootType = LOOT_LEGS;
 			} else if (tmpStrValue == "other") {
-				it.quickLootCategory = LOOT_OTHER;
+				it.lootType = LOOT_OTHER;
 			} else if (tmpStrValue == "potion") {
-				it.quickLootCategory = LOOT_POTION;
+				it.lootType = LOOT_POTION;
 			} else if (tmpStrValue == "ring") {
-				it.quickLootCategory = LOOT_RING;
+				it.lootType = LOOT_RING;
 			} else if (tmpStrValue == "rune") {
-				it.quickLootCategory = LOOT_RUNE;
+				it.lootType = LOOT_RUNE;
 			} else if (tmpStrValue == "shield") {
-				it.quickLootCategory = LOOT_SHIELD;
+				it.lootType = LOOT_SHIELD;
 			} else if (tmpStrValue == "tool") {
-				it.quickLootCategory = LOOT_TOOL;
+				it.lootType = LOOT_TOOLS;
 			} else if (tmpStrValue == "valuable") {
-				it.quickLootCategory = LOOT_VALUABLE;
+				it.lootType = LOOT_VALUABLES;
 			} else if (tmpStrValue == "weaponammo") {
-				it.quickLootCategory = LOOT_WEAPON_AMMO;
+				it.lootType = LOOT_AMMO;
 			} else if (tmpStrValue == "weaponaxe") {
-				it.quickLootCategory = LOOT_WEAPON_AXE;
+				it.lootType = LOOT_AXE;
 			} else if (tmpStrValue == "weaponclub") {
-				it.quickLootCategory = LOOT_WEAPON_CLUB;
+				it.lootType = LOOT_CLUB;
 			} else if (tmpStrValue == "weapondistance") {
-				it.quickLootCategory = LOOT_WEAPON_DISTANCE;
+				it.lootType = LOOT_DISTANCE;
 			} else if (tmpStrValue == "weaponsword") {
-				it.quickLootCategory = LOOT_WEAPON_SWORD;
+				it.lootType = LOOT_SWORD;
 			} else if (tmpStrValue == "weaponwand") {
-				it.quickLootCategory = LOOT_WEAPON_WAND;
+				it.lootType = LOOT_WAND;
 			} else if (tmpStrValue == "stashretrieve") {
-				it.quickLootCategory = LOOT_STASH_RETRIEVE;
+				it.lootType = LOOT_RETRIEVE;
 			} else {
 				std::cout << "[Warning - Items::parseItemNode] Unknown quickLootCategory: " << valueAttribute.as_string() << std::endl;
 			}

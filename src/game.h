@@ -402,6 +402,14 @@ class Game
 		void playerShowQuestLine(uint32_t playerId, uint16_t questId);
 		void playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 					   const std::string& receiver, const std::string& text);
+
+		void playerUpdateQuickLootContainer(uint32_t playerId, LootType_t lootType, const Position& pos,
+										 uint16_t spriteId, uint8_t index);
+		void playerClearQuickLootContainer(uint32_t playerId, LootType_t lootType);
+		void playerQuickLootUseMainContainer(uint32_t playerId, bool useMainContainer);
+		void playerManageAutoloot(uint32_t playerId, bool skipped, std::vector<uint16_t> itemList);
+		void playerLootCorpse(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos);
+
 		void playerChangeOutfit(uint32_t playerId, Outfit_t outfit);
 		void playerInviteToParty(uint32_t playerId, uint32_t invitedId);
 		void playerJoinParty(uint32_t playerId, uint32_t leaderId);

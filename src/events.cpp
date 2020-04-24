@@ -136,6 +136,8 @@ bool Events::load()
 				info.playerClearImbuement = event;
 			}else if (methodName == "onCombat") {
 				info.playerOnCombat = event;
+			} else if (methodName == "onLoot") {
+				info.playerOnLoot = event;
 
 			} else {
 				std::cout << "[Warning - Events::load] Unknown player method: " << methodName << std::endl;
@@ -1098,6 +1100,33 @@ void Events::eventPlayerOnCombat(Player* player, Creature* target, Item* item, C
 	}
 
 	scriptInterface.resetScriptEnv();
+}
+
+void Events::eventPlayerOnLoot(Player* player, Item* item)
+{
+	// Player:onLoot(item)
+	if (info.playerOnLoot == -1) {
+		return;
+	}
+
+	if (!scriptInterface.reserveScriptEnv()) {
+		std::cout << "[Error - Events::eventPlayerOnLoot] Call stack overflow" << std::endl;
+		return;
+	}
+
+	ScriptEnvironment* env = scriptInterface.getScriptEnv();
+	env->setScriptId(info.playerOnLoot, &scriptInterface);
+
+	lua_State* L = scriptInterface.getLuaState();
+	scriptInterface.pushFunction(info.playerOnLoot);
+
+	LuaScriptInterface::pushUserdata<Player>(L, player);
+	LuaScriptInterface::setMetatable(L, -1, "Player");
+
+	LuaScriptInterface::pushUserdata<Item>(L, item);
+	LuaScriptInterface::setMetatable(L, -1, "Item");
+
+	scriptInterface.callVoidFunction(2);
 }
 
 void Events::eventMonsterOnDropLoot(Monster* monster, Container* corpse)

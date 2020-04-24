@@ -1378,6 +1378,12 @@ class Player final : public Creature, public Cylinder
 			lastPong = OTSYS_TIME();
 		}
 
+		void sendUpdateQuickLoot() {
+			if (client) {
+				client->sendUpdateQuickLoot();
+			}
+		}
+
 		void onThink(uint32_t interval) final;
 
 		void postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t link = LINK_OWNER) final;
@@ -1504,6 +1510,13 @@ class Player final : public Creature, public Cylinder
 
 		uint16_t getFreeBackpackSlots() const;
 		StreakBonus_t getStreakDaysBonus()const;
+
+ 		// quicklooting
+		void manageQuicklootContainer(LootType_t loottype, Container* container = nullptr, bool isLogin = false);
+		std::vector<std::pair<LootType_t, Container*>> getLootContainers();
+		Container* getContainerLoot(LootType_t loottype);
+		bool acceptLoot(Item* item);
+		void checkLootContainers(const Item* item);
 
 	protected:
 		std::forward_list<Condition*> getMuteConditions() const;
@@ -1668,6 +1681,9 @@ class Player final : public Creature, public Cylinder
 		uint16_t storeXpBoost = 0;
 		uint16_t staminaXpBoost = 100;
 		int16_t lastDepotId = -1;
+		
+		std::unordered_map<LootType_t, Container*> quicklootContainers;
+		std::vector<uint16_t> itemLootVec;
 		
 		uint8_t soul = 0;
 		uint8_t levelPercent = 0;

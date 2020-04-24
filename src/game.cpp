@@ -3655,6 +3655,163 @@ void Game::playerShowQuestLine(uint32_t playerId, uint16_t questId)
 	g_events->eventPlayerOnRequestQuestLine(player, questId);
 }
 
+void Game::playerUpdateQuickLootContainer(uint32_t playerId, LootType_t lootType, const Position& pos,
+										 uint16_t spriteId, uint8_t index)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	if (pos.x != 0xFFFF) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	Thing* thing = internalGetThing(player, pos, index, spriteId, STACKPOS_USEITEM);
+	if (!thing) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	Item* item = thing->getItem();
+	if (!item || item->getClientID() != spriteId) {
+		return;
+	}
+
+	Container* container = item->getContainer();
+	if (!container) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	if (container->getHoldingPlayer() == player) {
+		player->manageQuicklootContainer(lootType, container);
+	}
+
+}
+
+void Game::playerClearQuickLootContainer(uint32_t playerId, LootType_t lootType)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	player->manageQuicklootContainer(lootType);
+}
+
+void Game::playerQuickLootUseMainContainer(uint32_t playerId, bool useMainContainer)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	player->useMainContainer = useMainContainer;
+	player->sendUpdateQuickLoot();
+}
+
+void Game::playerManageAutoloot(uint32_t playerId, bool skipped, std::vector<uint16_t> itemList)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	player->skippedLoot = skipped;
+	player->itemLootVec = itemList;
+
+}
+
+void Game::playerLootCorpse(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	if (!player->canDoAction()) {
+		uint32_t delay = player->getNextActionTime();
+		SchedulerTask* task = createSchedulerTask(delay, std::bind(&Game::playerLootCorpse,
+																   this, player->getID(), pos, spriteId, stackPos));
+		player->setNextActionTask(task);
+		return;
+	}
+
+	if (pos.x != 0xffff) {
+		if (!Position::areInRange<1, 1, 0>(pos, player->getPosition())) {
+			//need to walk to the corpse first before looting it
+			std::forward_list<Direction> listDir;
+			if (player->getPathTo(pos, listDir, 0, 1, true, true)) {
+				g_dispatcher.addTask(createTask(std::bind(&Game::playerAutoWalk, this, player->getID(), listDir)));
+				SchedulerTask* task = createSchedulerTask(0, std::bind(&Game::playerLootCorpse,
+																	   this, player->getID(), pos, spriteId, stackPos));
+				player->setNextWalkActionTask(task);
+			} else {
+				player->sendCancelMessage(RETURNVALUE_THEREISNOWAY);
+			}
+
+			return;
+		}
+	} else if (!player->isPremium()) {
+		player->sendCancelMessage("You must be premium.");
+		return;
+	}
+
+	player->setNextActionTask(nullptr);
+
+	Thing* thing = internalGetThing(player, pos, stackPos, spriteId, STACKPOS_USEITEM);
+	if (!thing) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	Item* item = thing->getItem();
+	if (!item || !item->getParent()) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	Container* corpse = nullptr;
+	if (pos.x == 0xffff) {
+		corpse = item->getParent()->getContainer();
+	} else {
+		corpse = item->getContainer();
+	}
+
+	if (!corpse) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	const ItemType& itemType = Item::items[corpse->getID()];
+	if (itemType.corpseType == RACE_NONE) {
+		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+		return;
+	}
+
+	if (!corpse->isRewardCorpse()) {
+		uint32_t corpseOwner = corpse->getCorpseOwner();
+		if (corpseOwner != 0 && !player->canOpenCorpse(corpseOwner)) {
+			player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+			return;
+		}
+	}
+
+	if (pos.x == 0xffff) {
+		g_events->eventPlayerOnLoot(player, item);
+	} else {
+		if (corpse->isRewardCorpse()) {
+			g_actions->useItem(player, pos, 0, corpse, false);
+		} else {
+			g_events->eventPlayerOnLoot(player, item);
+		}
+	}
+
+	return;
+}
+
 void Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 					 const std::string& receiver, const std::string& text)
 {

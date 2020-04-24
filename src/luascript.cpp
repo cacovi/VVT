@@ -1770,13 +1770,11 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(TILESTATE_FLOORCHANGE_EAST_ALT)
 	registerEnum(TILESTATE_SUPPORTS_HANGABLE)
 
-	registerEnum(LOOT_UNASSIGNED)
-	registerEnum(LOOT_GOLD)
+	registerEnum(LOOT_NONE)
 	registerEnum(LOOT_ARMOR)
 	registerEnum(LOOT_AMULET)
 	registerEnum(LOOT_BOOTS)
 	registerEnum(LOOT_CONTAINER)
-	registerEnum(LOOT_CREATURE_PRODUCT)
 	registerEnum(LOOT_DECORATION)
 	registerEnum(LOOT_FOOD)
 	registerEnum(LOOT_HELMET)
@@ -1786,17 +1784,18 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(LOOT_RING)
 	registerEnum(LOOT_RUNE)
 	registerEnum(LOOT_SHIELD)
-	registerEnum(LOOT_TOOL)
-	registerEnum(LOOT_VALUABLE)
-	registerEnum(LOOT_WEAPON_AMMO)
-	registerEnum(LOOT_WEAPON_AXE)
-	registerEnum(LOOT_WEAPON_CLUB)
-	registerEnum(LOOT_WEAPON_DISTANCE)
-	registerEnum(LOOT_WEAPON_SWORD)
-	registerEnum(LOOT_WEAPON_WAND)
-	registerEnum(LOOT_STASH_RETRIEVE)
-	registerEnum(LOOT_START)
-	registerEnum(LOOT_END)
+	registerEnum(LOOT_TOOLS)
+	registerEnum(LOOT_VALUABLES)
+	registerEnum(LOOT_AMMO)
+	registerEnum(LOOT_AXE)
+	registerEnum(LOOT_CLUB)
+	registerEnum(LOOT_DISTANCE)
+	registerEnum(LOOT_SWORD)
+	registerEnum(LOOT_WAND)
+	registerEnum(LOOT_CREATURE_PRODUCT)
+	registerEnum(LOOT_RETRIEVE)
+	registerEnum(LOOT_GOLD)
+	registerEnum(LOOT_UNASSIGNED)
 
 	registerEnum(WEAPON_NONE)
 	registerEnum(WEAPON_SWORD)
@@ -2642,6 +2641,9 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Player", "getIdleTime", LuaScriptInterface::luaPlayerGetIdleTime);
 	registerMethod("Player", "getFreeBackpackSlots", LuaScriptInterface::luaPlayerGetFreeBackpackSlots);
+
+	registerMethod("Player", "getLootContainer", LuaScriptInterface::luaPlayerGetLootContainer);
+	registerMethod("Player", "acceptLoot", LuaScriptInterface::luaPlayerAcceptLoot);
 
 	registerMethod("Player", "getInstantRewardTokens", LuaScriptInterface::luaPlayerGetInstantRewardTokenBalance);
 	registerMethod("Player", "setInstantRewardTokens", LuaScriptInterface::luaPlayerSetInstantRewardTokenBalance);
@@ -10984,6 +10986,46 @@ int LuaScriptInterface::luaPlayerGetFreeBackpackSlots(lua_State* L)
 	lua_pushnumber(L, std::max<uint16_t>(0, player->getFreeBackpackSlots()));
 	return 1;
 }
+
+
+int LuaScriptInterface::luaPlayerGetLootContainer(lua_State* L)
+{
+	// player:getLootContainer(loottype)
+	Player* player = getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+	}
+
+	LootType_t loot = getNumber<LootType_t>(L, 2, LOOT_UNASSIGNED);
+	Container* container = player->getContainerLoot(loot);
+	if (container) {
+		pushUserdata<Container>(L, container);
+		setMetatable(L, -1, "Container");
+	} else {
+		lua_pushnil(L);
+	}
+	
+	return 1;
+}
+
+int LuaScriptInterface::luaPlayerAcceptLoot(lua_State* L)
+{
+	// player:acceptLoot(item)
+	Player* player = getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+	}
+
+ 	Item* item = getUserdata<Item>(L, 2);
+	if (!item) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	pushBoolean(L, player->acceptLoot(item));
+	return 1;
+}
+
 
 int LuaScriptInterface::luaPlayerGetPreyState(lua_State* L)
 {

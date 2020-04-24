@@ -1382,3 +1382,44 @@ bool isCaskItem(uint16_t itemId)
 		(itemId >= ITEM_MANA_CASK_START && itemId <= ITEM_MANA_CASK_END) || 
 		(itemId >= ITEM_SPIRIT_CASK_START && itemId <= ITEM_SPIRIT_CASK_END);
 }
+
+using LootTypeNames = std::unordered_map<std::string, LootType_t>;
+
+LootTypeNames lootTypeNames = {
+	{"armor",		LOOT_ARMOR},
+	{"amulet",		LOOT_AMULET},
+	{"legs",		LOOT_BOOTS},
+	{"container",	LOOT_CONTAINER},
+	{"decoration",	LOOT_DECORATION},
+	{"food",		LOOT_FOOD},
+	{"head",		LOOT_HELMET},
+	{"legs",		LOOT_LEGS},
+	{"other",		LOOT_OTHER},
+	{"potion",		LOOT_POTION},
+	{"ring",		LOOT_RING},
+	{"rune",		LOOT_RUNE},
+	{"shield",		LOOT_SHIELD},
+	{"tools",		LOOT_TOOLS},
+	{"valuables",	LOOT_VALUABLES},
+	{"ammo",		LOOT_AMMO},
+	{"axe",			LOOT_AXE},
+	{"club",		LOOT_CLUB},
+	{"distance",	LOOT_DISTANCE},
+	{"sword",		LOOT_SWORD},
+	{"wand",		LOOT_WAND},
+
+	{"product",		LOOT_CREATURE_PRODUCT},
+
+	{"retrieve",	LOOT_RETRIEVE},
+	{"gold",		LOOT_GOLD},
+	{"unassigned",	LOOT_UNASSIGNED},
+};
+
+LootType_t getLootType(const std::string& strValue)
+{
+	auto lootType = lootTypeNames.find(strValue);
+	if (lootType != lootTypeNames.end()) {
+		return lootType->second;
+	}
+	return LOOT_UNASSIGNED;
+}

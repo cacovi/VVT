@@ -101,6 +101,8 @@ NameEval_t validateName(const std::string &name);
 
 bool isCaskItem(uint16_t itemId);
 
+LootType_t getLootType(const std::string& strValue);
+
 int64_t OTSYS_TIME();
 
 SpellGroup_t stringToSpellGroup(std::string value);

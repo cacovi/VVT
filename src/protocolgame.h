@@ -100,6 +100,10 @@ class ProtocolGame final : public Protocol
 		void onRecvFirstMessage(NetworkMessage& msg) final;
 		void onConnect() final;
 
+
+		void parseLootCorpse(NetworkMessage& msg);
+		void parseUpdateQuickLoot(NetworkMessage& msg);
+		void parseUpdateAutoLoot(NetworkMessage& msg);
 		//Parse methods
 		void parseAutoWalk(NetworkMessage& msg);
 		void parseSetOutfit(NetworkMessage& msg);
@@ -294,6 +298,8 @@ class ProtocolGame final : public Protocol
 
 		void sendSpellCooldown(uint8_t spellId, uint32_t time);
 		void sendSpellGroupCooldown(SpellGroup_t groupId, uint32_t time);
+
+		void sendUpdateQuickLoot();
 
 		void sendCoinBalance();
 

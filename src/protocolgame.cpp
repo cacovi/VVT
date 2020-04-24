@@ -457,6 +457,9 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 		case 0x8B: parseWrapableItem(msg); break;
 		case 0x8C: parseLookAt(msg); break;
 		case 0x8D: parseLookInBattleList(msg); break;
+		case 0x8F: parseLootCorpse(msg); break;
+		case 0x90: parseUpdateQuickLoot(msg); break;
+		case 0x91: parseUpdateAutoLoot(msg); break;
 		case 0x8E: /* join aggression */ break;
 		case 0x96: parseSay(msg); break;
 		case 0x97: addGameTask(&Game::playerRequestChannels, player->getID()); break;
@@ -892,6 +895,50 @@ void ProtocolGame::parseLookInBattleList(NetworkMessage& msg)
 {
 	uint32_t creatureId = msg.get<uint32_t>();
 	addGameTaskTimed(DISPATCHER_TASK_EXPIRATION, &Game::playerLookInBattleList, player->getID(), creatureId);
+}
+
+void ProtocolGame::parseLootCorpse(NetworkMessage& msg)
+{
+	Position position = msg.getPosition();
+	uint16_t spriteId = msg.get<uint16_t>();
+	uint8_t index = msg.get<uint8_t>();
+
+	addGameTask(&Game::playerLootCorpse, player->getID(), position, spriteId, index);
+}
+
+void ProtocolGame::parseUpdateQuickLoot(NetworkMessage& msg)
+{
+	uint8_t action = msg.getByte();
+	uint8_t nextByte  = msg.getByte();
+	if (action == 0x00) {
+		LootType_t lootType = static_cast<LootType_t>(nextByte);
+		Position toPos = msg.getPosition();
+		uint16_t spriteId = msg.get<uint16_t>();
+		uint8_t index = msg.getByte();
+		addGameTask(&Game::playerUpdateQuickLootContainer, player->getID(), lootType, toPos, spriteId, index);
+	} else if (action == 0x01) {
+		LootType_t lootType = static_cast<LootType_t>(nextByte);
+		addGameTask(&Game::playerClearQuickLootContainer, player->getID(), lootType);
+	} else if (action == 0x03) {
+		addGameTask(&Game::playerQuickLootUseMainContainer, player->getID(), nextByte == 1);
+	}
+
+	player->sendUpdateQuickLoot();
+	return;
+
+}
+
+void ProtocolGame::parseUpdateAutoLoot(NetworkMessage& msg)
+{
+	bool skipped = msg.getByte() == 0x00;
+	uint16_t count = msg.get<uint16_t>();
+	std::vector<uint16_t> itemList;
+	for(uint16_t i = 0; i < count; i++) {
+		const ItemType& it = Item::items.getItemIdByClientId(msg.get<uint16_t>());
+		itemList.emplace_back(it.id);
+	}
+
+	addGameTask(&Game::playerManageAutoloot, player->getID(), skipped, itemList);
 }
 
 void ProtocolGame::parseSay(NetworkMessage& msg)
@@ -4260,11 +4307,18 @@ void ProtocolGame::AddItem(NetworkMessage& msg, const Item* item)
 	} else if (it.isSplash() || it.isFluidContainer()) {
 		msg.addByte(fluidMap[item->getFluidType() & 7]);
 	} else if (version >= 1150 && it.isContainer()) {
-		uint32_t quickLootFlags = item->getQuickLootFlags();
-		if (quickLootFlags > 0) {
-			msg.addByte(2);
-			msg.add<uint32_t>(quickLootFlags);
+		const Container* container = item->getContainer();
+		if (container && container->getHoldingPlayer() == player) {
+			uint32_t quicklootOffset = item->getIntAttr(ITEM_ATTRIBUTE_QUICKLOOT);
+			bool hasLootFlag = quicklootOffset != 0;
+			msg.addByte(hasLootFlag);
+			if (hasLootFlag) {
+				msg.add<uint32_t>(quicklootOffset);
+			}
 		} else {
+			if (container) {
+				const_cast<Item*>(item)->removeAttribute(ITEM_ATTRIBUTE_QUICKLOOT);
+			}
 			msg.addByte(0x00);
 		}
 	}
@@ -4507,6 +4561,27 @@ void ProtocolGame::sendItemsPrice()
 			msg.addItemId(it.first);
 			msg.add<uint32_t>(it.second);
 		}
+	}
+
+	writeToOutputBuffer(msg);
+}
+
+void ProtocolGame::sendUpdateQuickLoot()
+{
+	if (version < 1150) {
+		return;
+	} 
+
+	NetworkMessage msg;
+	msg.addByte(0xC0);
+	msg.addByte(player->useMainContainer);
+
+	const auto& listContainers = player->getLootContainers();
+	msg.addByte(listContainers.size());
+
+	for (const auto& listContainer : listContainers) {
+		msg.addByte(listContainer.first);
+		msg.add<uint16_t>((listContainer.second)->getClientID());
 	}
 
 	writeToOutputBuffer(msg);

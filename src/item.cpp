@@ -605,6 +605,17 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 			break;
 		}
 
+		case ATTR_QUICKLOOT: {
+			uint32_t quickObject;
+			if (!propStream.read<uint32_t>(quickObject)) {
+				return ATTR_READ_ERROR;
+			}
+
+			setIntAttr(ITEM_ATTRIBUTE_QUICKLOOT, quickObject);
+			break;
+		}
+
+
 		case ATTR_HITCHANCE: {
 			int8_t hitChance;
 			if (!propStream.read<int8_t>(hitChance)) {
@@ -797,6 +808,11 @@ void Item::serializeAttr(PropWriteStream& propWriteStream) const
 	if (!specialDesc.empty()) {
 		propWriteStream.write<uint8_t>(ATTR_DESC);
 		propWriteStream.writeString(specialDesc);
+	}
+
+	if (hasAttribute(ITEM_ATTRIBUTE_QUICKLOOT)) {
+		propWriteStream.write<uint8_t>(ATTR_QUICKLOOT);
+		propWriteStream.write<uint32_t>(getIntAttr(ITEM_ATTRIBUTE_QUICKLOOT));
 	}
 
 	if (hasAttribute(ITEM_ATTRIBUTE_DURATION)) {
