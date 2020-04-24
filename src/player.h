@@ -1702,6 +1702,8 @@ class Player final : public Creature, public Cylinder
 		bool wasMounted = false;
 		bool ghostMode = false;
 		bool pzLocked = false;
+		bool useMainContainer = true;
+		bool skippedLoot = true;
 		bool isConnecting = false;
 		bool addAttackSkillPoint = false;
 		bool inventoryAbilities[CONST_SLOT_LAST + 1] = {};
