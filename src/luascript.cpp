@@ -6966,7 +6966,7 @@ int LuaScriptInterface::luaItemSerializeAttributes(lua_State* L)
 
 int LuaScriptInterface::luaItemMoveTo(lua_State* L)
 {
-	// item:moveTo(position or cylinder[, flags])
+	// item:moveTo(position or cylinder[, flags[, useDetails = false]])
 	Item** itemPtr = getRawUserdata<Item>(L, 1);
 	if (!itemPtr) {
 		lua_pushnil(L);
@@ -7011,16 +7011,25 @@ int LuaScriptInterface::luaItemMoveTo(lua_State* L)
 	}
 
 	uint32_t flags = getNumber<uint32_t>(L, 3, FLAG_NOLIMIT | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE | FLAG_IGNORENOTMOVEABLE);
+	bool useDetails = getBoolean(L, 4, false);
+	ReturnValue ret;
 
 	if (item->getParent() == VirtualCylinder::virtualCylinder) {
-		pushBoolean(L, g_game.internalAddItem(toCylinder, item, INDEX_WHEREEVER, flags) == RETURNVALUE_NOERROR);
+		ret = g_game.internalAddItem(toCylinder, item, INDEX_WHEREEVER, flags);
+		if (!useDetails)
+			pushBoolean(L, ret == RETURNVALUE_NOERROR);
+		else
+			lua_pushnumber(L, ret);
 	} else {
 		Item* moveItem = nullptr;
-		ReturnValue ret = g_game.internalMoveItem(item->getParent(), toCylinder, INDEX_WHEREEVER, item, item->getItemCount(), &moveItem, flags);
+		ret = g_game.internalMoveItem(item->getParent(), toCylinder, INDEX_WHEREEVER, item, item->getItemCount(), &moveItem, flags);
 		if (moveItem) {
 			*itemPtr = moveItem;
 		}
-		pushBoolean(L, ret == RETURNVALUE_NOERROR);
+		if (!useDetails)
+			pushBoolean(L, ret == RETURNVALUE_NOERROR);
+		else
+			lua_pushnumber(L, ret);
 	}
 	return 1;
 }
