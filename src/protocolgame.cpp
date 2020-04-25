@@ -524,6 +524,11 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 			// std::cout << "Player: " << player->getName() << " sent an unknown packet header: 0x" << std::hex << static_cast<uint16_t>(recvbyte) << std::dec << "!" << std::endl;
 			break;
 	}
+	/* temporary solution to disconnections while opening store
+		if (msg.isOverrun()) {
+			disconnect();
+		}
+	*/
 }
 
 void ProtocolGame::GetTileDescription(const Tile* tile, NetworkMessage& msg)
@@ -2542,7 +2547,7 @@ void ProtocolGame::updateCoinBalance()
 
     g_dispatcher.addTask(
         createTask(std::bind([](ProtocolGame* client) {
-			if (client) {
+			if (client && client->player) {
 				auto coinBalance = IOAccount::getCoinBalance(client->player->getAccount());
                 client->player->coinBalance = coinBalance;
                 client->sendCoinBalance();
