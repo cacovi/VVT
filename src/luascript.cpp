@@ -11147,22 +11147,6 @@ int LuaScriptInterface::luaPlayerSetBonusRerollCount(lua_State* L)
 	return 1;
 }
 
-int LuaScriptInterface::luaPlayerSetDepotStash(lua_State* L)
-{
-	// player:setDepotStash(idle)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player) {
-		lua_pushnil(L);
-		pushBoolean(L, false);
-		return 1;
-	}
-
-	player->sendDepotStash(getBoolean(L, 2));
-	pushBoolean(L, true);
-	return 1;
-}
-
-
 // Monster
 int LuaScriptInterface::luaMonsterCreate(lua_State* L)
 {
