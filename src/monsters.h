@@ -140,6 +140,8 @@ class MonsterType
 
 		uint64_t experience = 0;
 
+		uint16_t raceid = 0;
+
 		uint32_t manaCost = 0;
 		uint32_t yellChance = 0;
 		uint32_t yellSpeedTicks = 0;

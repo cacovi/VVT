@@ -99,6 +99,9 @@ class Monster final : public Creature
 		int32_t getDefense() const final {
 			return mType->info.defense;
 		}
+		uint16_t getRaceId() const {
+			return mType->info.raceid;
+		}
 		bool isPushable() const final {
 			return mType->info.pushable && baseSpeed != 0;
 		}

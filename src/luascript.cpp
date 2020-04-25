@@ -2150,6 +2150,10 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Game", "reload", LuaScriptInterface::luaGameReload);
 
+	// Boost system
+	registerMethod("Game", "getBoostMonster", LuaScriptInterface::luaGameGetBoostMonster);
+	registerMethod("Game", "setBoostMonster", LuaScriptInterface::luaGameSetBoostMonster);
+
 	registerMethod("Game", "getItemIdByClientId", LuaScriptInterface::luaGameGetItemByClientId);
 
 	registerMethod("Game", "itemidHasMoveevent", LuaScriptInterface::luaGameItemidHasMoveevent);
@@ -2598,6 +2602,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "hasLearnedSpell", LuaScriptInterface::luaPlayerHasLearnedSpell);
 
 	registerMethod("Player", "sendImbuementPanel", LuaScriptInterface::luaPlayerSendImbuementPanel);
+	registerMethod("Player", "setDepotStash", LuaScriptInterface::luaPlayerSetDepotStash);
 
 	registerMethod("Player", "sendTutorial", LuaScriptInterface::luaPlayerSendTutorial);
 	registerMethod("Player", "addMapMark", LuaScriptInterface::luaPlayerAddMapMark);
@@ -2665,6 +2670,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Monster", "isMonster", LuaScriptInterface::luaMonsterIsMonster);
 
 	registerMethod("Monster", "getType", LuaScriptInterface::luaMonsterGetType);
+	registerMethod("Monster", "getRaceId", LuaScriptInterface::luaMonsterGetRaceId);
 
 	registerMethod("Monster", "getSpawnPosition", LuaScriptInterface::luaMonsterGetSpawnPosition);
 	registerMethod("Monster", "isInSpawnRange", LuaScriptInterface::luaMonsterIsInSpawnRange);
@@ -2963,6 +2969,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("MonsterType", "outfit", LuaScriptInterface::luaMonsterTypeOutfit);
 	registerMethod("MonsterType", "race", LuaScriptInterface::luaMonsterTypeRace);
 	registerMethod("MonsterType", "corpseId", LuaScriptInterface::luaMonsterTypeCorpseId);
+	registerMethod("MonsterType", "raceId", LuaScriptInterface::luaMonsterTypeRaceId);
 	registerMethod("MonsterType", "manaCost", LuaScriptInterface::luaMonsterTypeManaCost);
 	registerMethod("MonsterType", "baseSpeed", LuaScriptInterface::luaMonsterTypeBaseSpeed);
 	registerMethod("MonsterType", "light", LuaScriptInterface::luaMonsterTypeLight);
@@ -4990,6 +4997,25 @@ int LuaScriptInterface::luaGameReload(lua_State* L)
 		pushBoolean(L, g_game.reload(reloadType));
 	}
 	lua_gc(g_luaEnvironment.getLuaState(), LUA_GCCOLLECT, 0);
+	return 1;
+}
+
+// Boost system
+int LuaScriptInterface::luaGameGetBoostMonster(lua_State* L)
+{
+	// Game.getBoostMonster()
+	pushString(L, g_game.getBoostMonster());
+	return 1;
+}
+
+int LuaScriptInterface::luaGameSetBoostMonster(lua_State* L)
+{
+	// Game.setBoostMonster(monster, id)
+	std::string monster = getString(L, 1);
+	uint16_t raceid = getNumber<uint16_t>(L, 2);
+
+	g_game.setBoostMonster(monster, raceid);
+	pushBoolean(L, true);
 	return 1;
 }
 
@@ -11121,6 +11147,22 @@ int LuaScriptInterface::luaPlayerSetBonusRerollCount(lua_State* L)
 	return 1;
 }
 
+int LuaScriptInterface::luaPlayerSetDepotStash(lua_State* L)
+{
+	// player:setDepotStash(idle)
+	Player* player = getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		pushBoolean(L, false);
+		return 1;
+	}
+
+	player->sendDepotStash(getBoolean(L, 2));
+	pushBoolean(L, true);
+	return 1;
+}
+
+
 // Monster
 int LuaScriptInterface::luaMonsterCreate(lua_State* L)
 {
@@ -11161,6 +11203,18 @@ int LuaScriptInterface::luaMonsterGetType(lua_State* L)
 	if (monster) {
 		pushUserdata<MonsterType>(L, monster->mType);
 		setMetatable(L, -1, "MonsterType");
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaMonsterGetRaceId(lua_State* L)
+{
+	// monster:getRaceId()
+	const Monster* monster = getUserdata<const Monster>(L, 1);
+	if (monster) {
+		lua_pushnumber(L, monster->getRaceId());
 	} else {
 		lua_pushnil(L);
 	}
@@ -14338,6 +14392,24 @@ int LuaScriptInterface::luaMonsterTypeCorpseId(lua_State* L)
 		} else {
 			monsterType->info.lookcorpse = getNumber<uint16_t>(L, 2);
 			lua_pushboolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaMonsterTypeRaceId(lua_State* L)
+{
+	// get: monsterType:raceId() set: monsterType:raceId(race)
+	MonsterType* monsterType = getUserdata<MonsterType>(L, 1);
+	uint16_t race = getNumber<uint16_t>(L, 2);
+	if (monsterType) {
+		if (lua_gettop(L) == 1) {
+			lua_pushnumber(L, monsterType->info.raceid);
+		} else {
+			monsterType->info.raceid = race;
+			pushBoolean(L, true);
 		}
 	} else {
 		lua_pushnil(L);

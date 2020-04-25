@@ -78,6 +78,8 @@ class ConfigManager
 			MAP_AUTHOR,
 			STORE_IMAGES_URL,
 			VERSION_STR,
+			MONSTER_URL,
+			ITEM_URL,
 
 			LAST_STRING_CONFIG /* this must be the last one */
 		};

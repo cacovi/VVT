@@ -177,6 +177,8 @@ bool ConfigManager::load()
 	string[MOTD] = getGlobalString(L, "motd", "");
 	string[WORLD_TYPE] = getGlobalString(L, "worldType", "pvp");
 	string[STORE_IMAGES_URL] = getGlobalString(L, "coinImagesURL", "");
+	string[MONSTER_URL] = getGlobalString(L, "monsterImageUrl", "https://outfit-images.ots.me/animatedOutfits1099/animoutfit.php?");
+	string[ITEM_URL] = getGlobalString(L, "itemImagemUrl", "./layouts/tibiacom/images/character/items/");
 
 	integer[MAX_PLAYERS] = getGlobalNumber(L, "maxPlayers");
 	integer[PZ_LOCKED] = getGlobalNumber(L, "pzLocked", 60000);

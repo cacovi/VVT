@@ -126,6 +126,7 @@ void Game::setGameState(GameState_t newState)
 			loadSkillStages();
 			loadMagicLevelStages();
 
+			loadBoostMonster();
 			loadItemsPrice();
 			groups.load();
 			g_chat->load();
@@ -7284,4 +7285,78 @@ bool Game::hasDistanceEffect(uint8_t effectId) {
 		}
 	}
 	return false;
+}
+
+bool Game::loadBoostMonster()
+{
+	Database& db = Database::getInstance();
+	DBResult_ptr resultQuery1 = db.storeQuery("SELECT `value` FROM `server_config` WHERE `config` = 'boost_monster'");
+	if (!resultQuery1) {
+		db.executeQuery("INSERT INTO `server_config` (`config`, `value`) VALUES ('boost_monster', '1')");
+		boostRace = 1;
+	} else {
+		boostRace = resultQuery1->getNumber<uint16_t>("value");
+	}
+
+	DBResult_ptr resultQuery2 = db.storeQuery("SELECT `value` FROM `server_config` WHERE `config` = 'boost_monster_name'");
+	if (!resultQuery2) {
+		db.executeQuery("INSERT INTO `server_config` (`config`, `value`) VALUES ('boost_monster_name', 'none')");
+		boostMonster = "none";
+	} else {
+		boostMonster = resultQuery2->getString("value");
+	}
+
+	DBResult_ptr resultQuery3 = db.storeQuery("SELECT `value` FROM `server_config` WHERE `config` = 'boost_monster_url'");
+	if (!resultQuery3) {
+		db.executeQuery("INSERT INTO `server_config` (`config`, `value`) VALUES ('boost_monster_url', 'none')");
+	}
+
+	return true;
+}
+
+void Game::setBoostMonster(std::string monstername, uint16_t monsterid)
+{
+	Database& db = Database::getInstance();
+	std::ostringstream query;
+	query << "UPDATE `server_config` SET `value` = '" << monsterid << "' WHERE `config` = 'boost_monster'";
+	db.executeQuery(query.str());
+
+	query.str(std::string());
+	query << "UPDATE `server_config` SET `value` = " << db.escapeString(monstername) << " WHERE `config` = 'boost_monster_name'";
+	db.executeQuery(query.str());
+
+	// seting outfit
+	MonsterType* monsterType = g_monsters.getMonsterTypeByRace(monsterid);
+	std::ostringstream outfitstr;
+	if (monsterType) {
+		Outfit_t outfit = monsterType->info.outfit;
+		if (outfit.lookType > 0) {
+			outfitstr << g_config.getString(ConfigManager::MONSTER_URL);
+			outfitstr << "id=" << std::to_string(outfit.lookType);
+			if (outfit.lookAddons > 0)
+				outfitstr << "&addons=" << std::to_string(outfit.lookAddons);
+			if (outfit.lookHead > 0)
+				outfitstr << "&head=" << std::to_string(outfit.lookHead);
+			if (outfit.lookBody > 0)
+				outfitstr << "&body=" << std::to_string(outfit.lookBody);
+			if (outfit.lookLegs > 0)
+				outfitstr << "&legs=" << std::to_string(outfit.lookLegs);
+			if (outfit.lookFeet > 0)
+				outfitstr << "&feet=" << std::to_string(outfit.lookFeet);
+			if (outfit.lookMount > 0)
+				outfitstr << "&mount=" << std::to_string(outfit.lookMount);
+
+		} else {
+			outfitstr << g_config.getString(ConfigManager::ITEM_URL) << std::to_string(outfit.lookTypeEx) << ".gif";
+		}
+	} else {
+		outfitstr << g_config.getString(ConfigManager::MONSTER_URL) << "id=128&addons=3&head=115&body=107&legs=19&feet=38";
+	}
+
+	query.str(std::string());
+	query << "UPDATE `server_config` SET `value` = " << db.escapeString(outfitstr.str()) << " WHERE `config` = 'boost_monster_url'";
+	db.executeQuery(query.str());
+
+	boostRace = monsterid;
+	boostMonster = monstername;
 }

@@ -462,6 +462,13 @@ class Game
 		void setGameState(GameState_t newState);
 		void saveGameState();
 
+		bool loadBoostMonster();
+		std::string getBoostMonster() {
+			return boostMonster;
+		}
+		void setBoostMonster(std::string monstername, uint16_t monsterid);
+
+
 		//Events
 		void checkCreatureWalk(uint32_t creatureId);
 		void updateCreatureWalk(uint32_t creatureId);
@@ -571,6 +578,9 @@ class Game
 
 		void checkDecay();
 		void internalDecayItem(Item* item);
+
+		std::string boostMonster = "";
+		uint16_t boostRace = 1;
 
 		std::unordered_map<uint32_t, Player*> players;
 		std::unordered_map<std::string, Player*> mappedPlayerNames;

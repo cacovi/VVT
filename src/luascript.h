@@ -557,6 +557,10 @@ class LuaScriptInterface
 
 		static int luaGameReload(lua_State* L);
 
+		// Boost
+		static int luaGameGetBoostMonster(lua_State* L);
+		static int luaGameSetBoostMonster(lua_State* L);
+
 		static int luaGameGetItemByClientId(lua_State* L);
 
 		static int luaGameItemidHasMoveevent(lua_State* L);
@@ -1044,6 +1048,9 @@ class LuaScriptInterface
 
 		static int luaPlayerGetIdleTime(lua_State* L);
 		static int luaPlayerGetFreeBackpackSlots(lua_State* L);
+		
+		// Stash
+		static int luaPlayerSetDepotStash(lua_State* L);
 
 		static int luaPlayerGetLootContainer(lua_State* L);
 		static int luaPlayerAcceptLoot(lua_State* L);
@@ -1065,6 +1072,7 @@ class LuaScriptInterface
 		static int luaMonsterIsMonster(lua_State* L);
 
 		static int luaMonsterGetType(lua_State* L);
+		static int luaMonsterGetRaceId(lua_State* L);
 
 		static int luaMonsterGetSpawnPosition(lua_State* L);
 		static int luaMonsterIsInSpawnRange(lua_State* L);
@@ -1349,6 +1357,7 @@ class LuaScriptInterface
 		static int luaMonsterTypeOutfit(lua_State* L);
 		static int luaMonsterTypeRace(lua_State* L);
 		static int luaMonsterTypeCorpseId(lua_State* L);
+		static int luaMonsterTypeRaceId(lua_State* L);
 		static int luaMonsterTypeManaCost(lua_State* L);
 		static int luaMonsterTypeBaseSpeed(lua_State* L);
 		static int luaMonsterTypeLight(lua_State* L);

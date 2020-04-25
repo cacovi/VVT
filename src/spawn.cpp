@@ -255,7 +255,12 @@ void Spawn::checkSpawn()
 			continue;
 		}
 
-		if (OTSYS_TIME() >= sb.lastSpawn + sb.interval) {
+		uint8_t divisible = 1;
+		if(asLowerCaseString(sb.mType->name) == asLowerCaseString(g_game.getBoostMonster())) {
+			divisible = 2;
+		}
+
+		if (OTSYS_TIME() >= sb.lastSpawn + (sb.interval/divisible)) {
 			if (sb.mType->info.isBlockable && findPlayer(sb.pos)) {
 				sb.lastSpawn = OTSYS_TIME();
 				continue;
