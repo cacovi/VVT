@@ -809,7 +809,6 @@ MonsterType* Monsters::loadMonster(const std::string& file, const std::string& m
 	if ((attr = monsterNode.attribute("raceid"))) {
 		uint16_t race_id = pugi::cast<uint16_t>(attr.value());
 		mType->info.raceid = pugi::cast<uint16_t>(attr.value());
-		raceidMonsters[race_id] = mType->name;
 	}
 
 	if ((attr = monsterNode.attribute("skull"))) {
