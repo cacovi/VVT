@@ -1048,7 +1048,7 @@ class LuaScriptInterface
 
 		static int luaPlayerGetIdleTime(lua_State* L);
 		static int luaPlayerGetFreeBackpackSlots(lua_State* L);
-
+		
 		static int luaPlayerGetLootContainer(lua_State* L);
 		static int luaPlayerAcceptLoot(lua_State* L);
 

@@ -14392,7 +14392,6 @@ int LuaScriptInterface::luaMonsterTypeRaceId(lua_State* L)
 			lua_pushnumber(L, monsterType->info.raceid);
 		} else {
 			monsterType->info.raceid = race;
-			g_monsters.addRaceID(race, monsterType->name);
 			pushBoolean(L, true);
 		}
 	} else {
