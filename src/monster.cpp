@@ -731,6 +731,14 @@ void Monster::onThink(uint32_t interval)
 		g_game.removeCreature(this);
 	}
 
+	if (isPet() && removeTime > -1) {
+		removeTime -= interval;
+		if (removeTime <= 0) {
+			g_game.removeCreature(this);
+			return;
+		}
+	}
+
 	if (!isInSpawnRange(position)) {
 		g_game.internalTeleport(this, masterPos);
 		setIdle(true);

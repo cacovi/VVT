@@ -1063,8 +1063,13 @@ class LuaScriptInterface
 		static int luaPlayerGetBonusRerollCount(lua_State* L);
 		static int luaPlayerSetBonusRerollCount(lua_State* L);
 
+		static int luaPlayerGetPet(lua_State* L);
+		static int luaPlayerSetPet(lua_State* L);
+
 		// Monster
 		static int luaMonsterCreate(lua_State* L);
+
+		static int luaMonsterGetRemoveTime(lua_State* L);
 
 		static int luaMonsterIsMonster(lua_State* L);
 

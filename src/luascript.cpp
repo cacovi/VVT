@@ -2662,6 +2662,9 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "getBonusRerollCount", LuaScriptInterface::luaPlayerGetBonusRerollCount);
 	registerMethod("Player", "setBonusRerollCount", LuaScriptInterface::luaPlayerSetBonusRerollCount);
 
+	registerMethod("Player", "getPet", LuaScriptInterface::luaPlayerGetPet);
+	registerMethod("Player", "setPet", LuaScriptInterface::luaPlayerSetPet);
+
 	// Monster
 	registerClass("Monster", "Creature", LuaScriptInterface::luaMonsterCreate);
 	registerMetaMethod("Monster", "__eq", LuaScriptInterface::luaUserdataCompare);
@@ -2695,6 +2698,8 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Monster", "searchTarget", LuaScriptInterface::luaMonsterSearchTarget);
 	registerMethod("Monster", "setSpawnPosition", LuaScriptInterface::luaMonsterSetSpawnPosition);
 	registerMethod("Monster", "getRespawnType", LuaScriptInterface::luaMonsterGetRespawnType);
+
+	registerMethod("Monster", "getRemoveTime", LuaScriptInterface::luaMonsterGetRemoveTime);
 
 	// Npc
 	registerClass("Npc", "Creature", LuaScriptInterface::luaNpcCreate);
@@ -11146,6 +11151,48 @@ int LuaScriptInterface::luaPlayerSetBonusRerollCount(lua_State* L)
 	return 1;
 }
 
+int LuaScriptInterface::luaPlayerGetPet(lua_State* L)
+{
+	// player:getPet()
+	Player* player =  getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Creature* pet = g_game.getCreatureByID(player->myPet);
+	if (!pet) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	pushUserdata<Creature>(L, pet);
+	setMetatable(L, -1, "Creature");
+	return 1;
+}
+
+int LuaScriptInterface::luaPlayerSetPet(lua_State* L)
+{
+	// player:setPet(creature[, decay = 900000])
+	Player* player =  getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Creature* pet = getUserdata<Creature>(L, 2);
+	if (!pet) {
+		player->setPet(nullptr, 0);
+		pushBoolean(L, false);
+		return 1;
+	}
+
+	int32_t decayTime = getNumber<int32_t>(L, 3, 900000);
+	player->setPet(pet, decayTime);
+	pushBoolean(L, true);
+	return 1;
+}
+
 // Monster
 int LuaScriptInterface::luaMonsterCreate(lua_State* L)
 {
@@ -11470,6 +11517,19 @@ int LuaScriptInterface::luaMonsterGetRespawnType(lua_State* L)
 	Monster* monster = getUserdata<Monster>(L, 1);
 	if (monster) {
 		lua_pushnumber(L, monster->getRespawnType());
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaMonsterGetRemoveTime(lua_State* L)
+{
+	// monster:getRemoveTime()
+	Monster* monster = getUserdata<Monster>(L, 1);
+	if (monster) {
+		lua_pushnumber(L, monster->getRemoveTime());
 	}
 	else {
 		lua_pushnil(L);

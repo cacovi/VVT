@@ -193,6 +193,14 @@ class Monster final : public Creature
 			return ignoreFieldDamage;
 		}
 
+		void setRemoveTime(int32_t decay) final {
+			removeTime = decay;
+		}
+
+		int32_t getRemoveTime() {
+			return removeTime;
+		}
+
 		BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
 							 bool checkDefense = false, bool checkArmor = false, bool field = false);
 
@@ -219,6 +227,7 @@ class Monster final : public Creature
 		int32_t targetChangeCooldown = 0;
 		int32_t targetExetaCooldown = 0;
 		int32_t stepDuration = 0;
+		int32_t removeTime = -1;
 
 		Position masterPos;
 

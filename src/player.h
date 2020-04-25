@@ -1518,6 +1518,23 @@ class Player final : public Creature, public Cylinder
 		bool acceptLoot(Item* item);
 		void checkLootContainers(const Item* item);
 
+		void setPet(Creature* pet, int32_t decay = 900000)
+		{
+			if (!pet) {
+				myPet = 0;
+				return;
+			}
+
+			// se por algum bug superar 15 min, ele seta 15 novamente
+			if (decay > 900000) {
+				decay = 900000;
+			}
+
+			myPet = pet->getID();
+			pet->setRemoveTime(decay);
+			return;
+		}
+
 	protected:
 		std::forward_list<Condition*> getMuteConditions() const;
 
@@ -1617,6 +1634,7 @@ class Player final : public Creature, public Cylinder
 		int64_t nextAction = 0;
 		uint64_t instantRewardTokens = 0;
 		int64_t bonusRerollCount = 0;
+		uint32_t myPet = 0;
 
 		std::vector<Kill> unjustifiedKills;
 

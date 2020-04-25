@@ -412,6 +412,8 @@ class Creature : virtual public Thing
 
 		virtual void onPlacedCreature() {}
 
+		virtual void setRemoveTime(int32_t) {}
+
 		virtual bool getCombatValues(int32_t&, int32_t&) {
 			return false;
 		}
