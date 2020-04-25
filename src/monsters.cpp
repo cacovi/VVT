@@ -1422,3 +1422,7 @@ MonsterType* Monsters::getMonsterTypeByRace(uint16_t raceid)
 
 	return nullptr;
 }
+
+void Monsters::addRaceID(uint16_t raceid, std::string name) {
+	raceidMonsters[name] = raceid;
+}

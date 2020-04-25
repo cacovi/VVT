@@ -267,9 +267,7 @@ class Monsters
 		
 		std::unique_ptr<LuaScriptInterface> scriptInterface;
 		bool loadCallback(LuaScriptInterface* scriptInterface, MonsterType* mType);
-		void addRaceID(uint16_t raceid, std::string name) {
-			raceidMonsters[name] = raceid;
-		}
+		void addRaceID(uint16_t raceid, std::string name);
 	private:
 		ConditionDamage* getDamageCondition(ConditionType_t conditionType,
 											int32_t maxDamage, int32_t minDamage, int32_t startDamage, uint32_t tickInterval);
