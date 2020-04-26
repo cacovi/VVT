@@ -2516,6 +2516,14 @@ void ProtocolGame::sendMarketEnter(uint32_t depotId)
 	sendResourceBalance(player->getMoney(), player->getBankBalance());
 }
 
+void ProtocolGame::sendDepotStash(const bool enable)
+{
+	NetworkMessage msg;
+	msg.addByte(0x2A);
+	msg.addByte(enable);
+	writeToOutputBuffer(msg);
+}
+
 void ProtocolGame::sendCoinBalance()
 {
 	if (!player) {
