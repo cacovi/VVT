@@ -1110,7 +1110,8 @@ class Player final : public Creature, public Cylinder
 				client->sendShop(npc, shopItemList);
 			}
 		}
-		void sendSaleItemList() const {
+		void sendSaleItemList() {
+			updatingSaleItemList = false;
 			if (client) {
 				client->sendSaleItemList(shopItemList);
 			}
@@ -1720,6 +1721,7 @@ class Player final : public Creature, public Cylinder
 		bool wasMounted = false;
 		bool ghostMode = false;
 		bool pzLocked = false;
+		bool updatingSaleItemList = false;
 		bool useMainContainer = true;
 		bool skippedLoot = true;
 		bool isConnecting = false;

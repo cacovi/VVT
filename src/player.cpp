@@ -3270,11 +3270,15 @@ bool Player::updateSaleShopList(const Item* item)
 		}
 	}
 
-	if (client) {
-		client->sendSaleItemList(shopItemList);
+	if (updatingSaleItemList) {
+		return true;
 	}
+	g_dispatcher.addTask(createTask(std::bind(&Game::playerSendSaleItemList, &g_game, getID())));
+
+	updatingSaleItemList = true;
 	return true;
 }
+
 
 bool Player::hasShopItemForSale(uint32_t itemId, uint8_t subType) const
 {

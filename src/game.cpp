@@ -6872,6 +6872,16 @@ void Game::playerStoreTransactionHistory(uint32_t playerId, uint32_t page)
 	}
 }
 
+void Game::playerSendSaleItemList(uint32_t playerId)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player) {
+		return;
+	}
+
+	player->sendSaleItemList();
+}
+
 void Game::parsePlayerExtendedOpcode(uint32_t playerId, uint8_t opcode, const std::string& buffer)
 {
 	Player* player = getPlayerByID(playerId);
