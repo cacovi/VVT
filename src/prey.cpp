@@ -119,6 +119,8 @@ bool Prey::loadFromXml()
 					preyNames.emplace_back(mType->name);
 					if (mType->info.raceid > 0) {
 						preyRaceid.emplace_back(mType->info.raceid);
+					} else {
+						std::cout << "[Warning - Prey::loadFromXml] Monster with name " << monsterName << " no have RACE ID." << std::endl;
 					}
 				}
 				else {
