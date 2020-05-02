@@ -1928,22 +1928,20 @@ void ProtocolGame::sendBasicData()
 	writeToOutputBuffer(msg);
 }
 
-void ProtocolGame::sendPreyData(uint8_t preySlotId)
+void ProtocolGameBase::sendPreyData(uint8_t preySlotId)
 {
 	if (preySlotId >= PREY_SLOTCOUNT) {
 		return;
 	}
 
 	NetworkMessage msg;
-	msg.reset();
 	PreyData& currentPreyData = player->preyData[preySlotId];
 	msg.addByte(0xE8);
 	msg.addByte(preySlotId);
 	msg.addByte(currentPreyData.state);
 	if (currentPreyData.state == STATE_LOCKED) {
 		msg.addByte(UNLOCK_STORE);
-	}
-	else if (currentPreyData.state == STATE_SELECTION || currentPreyData.state == STATE_SELECTION_CHANGE_MONSTER) {
+	} else if (currentPreyData.state == STATE_SELECTION || currentPreyData.state == STATE_SELECTION_CHANGE_MONSTER) {
 		if (currentPreyData.state == STATE_SELECTION_CHANGE_MONSTER) {
 			msg.addByte(static_cast<uint8_t>(currentPreyData.bonusType));
 			msg.add<uint16_t>(currentPreyData.bonusValue);
@@ -1968,23 +1966,19 @@ void ProtocolGame::sendPreyData(uint8_t preySlotId)
 				msg.addByte(0);
 			}
 		}
-	}
-	else if (currentPreyData.state == STATE_ACTIVE) {
+
+	} else if (currentPreyData.state == STATE_ACTIVE) {
 		msg.addString(currentPreyData.preyMonster);
 		if (MonsterType* mType = g_monsters.getMonsterType(currentPreyData.preyMonster)) {
-			msg.add<uint16_t>(mType->info.outfit.lookType == 0 ? 21 : mType->info.outfit.lookType);
-			msg.addByte(mType->info.outfit.lookHead);
-			msg.addByte(mType->info.outfit.lookBody);
-			msg.addByte(mType->info.outfit.lookLegs);
-			msg.addByte(mType->info.outfit.lookFeet);
-			msg.addByte(mType->info.outfit.lookAddons);
+				msg.add<uint16_t>(mType->info.outfit.lookType == 0 ? 21 : mType->info.outfit.lookType);
+				msg.addByte(mType->info.outfit.lookHead);
+				msg.addByte(mType->info.outfit.lookBody);
+				msg.addByte(mType->info.outfit.lookLegs);
+				msg.addByte(mType->info.outfit.lookFeet);
+				msg.addByte(mType->info.outfit.lookAddons);
 		} else {
-			msg.add<uint16_t>(21);
-			msg.addByte(0);
-			msg.addByte(0);
-			msg.addByte(0);
-			msg.addByte(0);
-			msg.addByte(0);
+			msg.add<uint16_t>(0);
+			msg.add<uint16_t>(0);
 		}
 
 		msg.addByte(static_cast<uint8_t>(currentPreyData.bonusType));
@@ -2003,6 +1997,7 @@ void ProtocolGame::sendPreyData(uint8_t preySlotId)
 	if (version >= 1190) {
 		msg.addByte(0x00); //preyWildCards
 	}
+
 	writeToOutputBuffer(msg);
 }
 
