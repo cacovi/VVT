@@ -67,8 +67,6 @@ bool Monsters::loadFromXml(bool reloading /*= false*/)
 			raceidMonsters[race] = name;
 		}
 
-		std::cout << race << " - " << name << std::endl;
-
 		std::string file = "data/monster/" + std::string(monsterNode.attribute("file").as_string());
 		auto forceLoad = true;
 		if (forceLoad) {
@@ -825,7 +823,7 @@ MonsterType* Monsters::loadMonster(const std::string& file, const std::string& m
 
 	if ((attr = monsterNode.attribute("raceid"))) {
 		mType->info.raceid = pugi::cast<uint16_t>(attr.value());
-	} else {
+	} else if (raceid > 0) {
 		mType->info.raceid = raceid;
 	}
 
