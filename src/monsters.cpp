@@ -67,6 +67,8 @@ bool Monsters::loadFromXml(bool reloading /*= false*/)
 			raceidMonsters[race] = name;
 		}
 
+		std::cout << race << " - " << name << std::endl;
+
 		std::string file = "data/monster/" + std::string(monsterNode.attribute("file").as_string());
 		auto forceLoad = true;
 		if (forceLoad) {
