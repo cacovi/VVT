@@ -267,12 +267,14 @@ class Monsters
 		
 		std::unique_ptr<LuaScriptInterface> scriptInterface;
 		bool loadCallback(LuaScriptInterface* scriptInterface, MonsterType* mType);
+
+		std::map<uint16_t, std::string> raceidMonsters;
 	private:
 		ConditionDamage* getDamageCondition(ConditionType_t conditionType,
 											int32_t maxDamage, int32_t minDamage, int32_t startDamage, uint32_t tickInterval);
 		bool deserializeSpell(const pugi::xml_node& node, spellBlock_t& sb, const std::string& description = "");
 
-		MonsterType* loadMonster(const std::string& file, const std::string& monsterName, bool reloading = false);
+		MonsterType* loadMonster(const std::string& file, const std::string& monsterName, bool reloading = false, uint16_t raceid = 0);
 
 		void loadLootContainer(const pugi::xml_node& node, LootBlock&);
 		bool loadLootItem(const pugi::xml_node& node, LootBlock&);

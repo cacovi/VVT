@@ -240,6 +240,10 @@ class Game
 
 		LightInfo getWorldLightInfo() const;
 
+		std::map<std::string, uint16_t>& getRaces() {
+			return monsterRace;
+		}
+
 		bool gameIsDay();
 
 		ReturnValue internalMoveCreature(Creature* creature, Direction direction, uint32_t flags = 0);
@@ -427,7 +431,7 @@ class Game
 		void playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16_t counter, uint16_t amount);
 		void playerSendSaleItemList(uint32_t playerId);
 		void playerRequestResourceData(uint32_t playerId, ResourceType_t resourceType);
-		void playerPreyAction(uint32_t playerId, uint8_t preySlotId, PreyAction_t preyAction, uint8_t monsterIndex);
+		void playerPreyAction(uint32_t playerId, uint8_t preySlotId, PreyAction_t preyAction, uint8_t monsterIndex, uint16_t raceId);
 		void playerStoreOpen(uint32_t playerId, uint8_t serviceType);
 		void playerShowStoreCategoryOffers(uint32_t playerId, StoreCategory* category);
 		void playerBuyStoreOffer(uint32_t playerId, uint32_t offerId, uint8_t productType, const std::string& additionalInfo="");
@@ -496,6 +500,8 @@ class Game
 			item->incrementReferenceCounter();
 			toImbuedItems.push_front(item);
 		}
+
+		void loadRaces();
 
 		void startDecay(Item* item);
 		int32_t getLightHour() const {
@@ -582,6 +588,8 @@ class Game
 
 		std::string boostMonster = "";
 		uint16_t boostRace = 1;
+
+		std::map<std::string, uint16_t> monsterRace;
 
 		std::unordered_map<uint32_t, Player*> players;
 		std::unordered_map<std::string, Player*> mappedPlayerNames;

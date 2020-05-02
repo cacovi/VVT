@@ -32,6 +32,8 @@ enum PreyAction_t : uint8_t {
 	PREY_ACTION_LISTREROLL = 0,
 	PREY_ACTION_BONUSREROLL = 1,
 	PREY_ACTION_MONSTERSELECTION = 2,
+	NEW_BONUS_WILDCARD = 3,
+	NEW_BONUS_SELECTIONWILDCARD = 4,
 };
 
 enum PreyState : uint8_t {
@@ -40,6 +42,7 @@ enum PreyState : uint8_t {
 	STATE_ACTIVE = 2,
 	STATE_SELECTION = 3,
 	STATE_SELECTION_CHANGE_MONSTER = 4,
+	STATE_SELECTION_WILDCARD = 5,
 };
 
 enum UnlockState : uint8_t {
@@ -86,6 +89,10 @@ class Prey {
 			return rerollPricePerLevel;
 		}
 
+		const std::vector<uint16_t>& getPreyRaces() {
+			return preyRaceid;
+		}
+
 		const std::vector<std::string>& getPreyNames() {
 			return preyNames;
 		}
@@ -96,6 +103,7 @@ class Prey {
 
 	protected:
 		std::vector<std::string> preyNames;
+		std::vector<uint16_t> preyRaceid;
 		std::vector<BonusEntry> availableBonuses;
 		uint16_t timeToFreeReroll;
 		uint16_t preyDuration;

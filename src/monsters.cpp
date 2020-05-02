@@ -55,11 +55,26 @@ bool Monsters::loadFromXml(bool reloading /*= false*/)
 
 	loaded = true;
 
+	std::map<std::string, uint16_t> bestiaryMonsters = g_game.getRaces();
 	for (auto monsterNode : doc.child("monsters").children()) {
 		std::string name = asLowerCaseString(monsterNode.attribute("name").as_string());
+		uint16_t race = 0;
+		auto it = bestiaryMonsters.find(name);
+		if (it != bestiaryMonsters.end()) {
+			race = it->second;
+		}
+		if (race != 0) {
+			raceidMonsters[race] = name;
+		}
+
 		std::string file = "data/monster/" + std::string(monsterNode.attribute("file").as_string());
+		auto forceLoad = true;
+		if (forceLoad) {
+			loadMonster(file, name, true, race);
+			continue;
+		}
 		if (reloading && monsters.find(name) != monsters.end()) {
-			loadMonster(file, name, true);
+			loadMonster(file, name, true, race);
 		} else {
 			unloadedMonsters.emplace(name, file);
 		}
@@ -733,7 +748,7 @@ bool Monsters::deserializeSpell(MonsterSpell* spell, spellBlock_t& sb, const std
 	return true;
 }
 
-MonsterType* Monsters::loadMonster(const std::string& file, const std::string& monsterName, bool reloading /*= false*/)
+MonsterType* Monsters::loadMonster(const std::string& file, const std::string& monsterName, bool reloading /*= false*/, uint16_t raceid)
 {
 	MonsterType* mType = nullptr;
 
@@ -808,6 +823,8 @@ MonsterType* Monsters::loadMonster(const std::string& file, const std::string& m
 
 	if ((attr = monsterNode.attribute("raceid"))) {
 		mType->info.raceid = pugi::cast<uint16_t>(attr.value());
+	} else {
+		mType->info.raceid = raceid;
 	}
 
 	if ((attr = monsterNode.attribute("skull"))) {
@@ -1378,6 +1395,16 @@ MonsterType* Monsters::getMonsterType(const std::string& name)
 	return &it->second;
 }
 
+MonsterType* Monsters::getMonsterTypeByRace(uint16_t raceid)
+{
+	auto it = raceidMonsters.find(raceid);
+	if (it != raceidMonsters.end()) {
+		return getMonsterType(it->second);
+	}
+
+	return nullptr;
+}
+
 void Monsters::addMonsterType(const std::string& name, MonsterType* mType)
 {
 	// Suppress [-Werror=unused-but-set-parameter]
@@ -1409,14 +1436,4 @@ bool Monsters::loadCallback(LuaScriptInterface* luaScriptInterface, MonsterType*
 
 	luaScriptInterface->getScriptEnv()->setScriptId(id, luaScriptInterface);
 	return true;
-}
-
-MonsterType* Monsters::getMonsterTypeByRace(uint16_t raceid)
-{
-	for (auto& it : monsters) {
-		if (it.second.info.raceid == raceid) {
-			return &it.second;
-		}
-	}
-	return nullptr;
 }

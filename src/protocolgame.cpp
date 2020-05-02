@@ -1360,10 +1360,14 @@ void ProtocolGame::parsePreyAction(NetworkMessage& msg)
 	uint8_t preySlotId = msg.getByte();
 	PreyAction_t preyAction = static_cast<PreyAction_t>(msg.getByte());
 	uint8_t monsterIndex = 0;
+	uint16_t raceId = 0;
 	if (preyAction == PREY_ACTION_MONSTERSELECTION) {
 		monsterIndex = msg.getByte();
+	} else if (preyAction == NEW_BONUS_SELECTIONWILDCARD) {
+		raceId = msg.get<uint16_t>();
 	}
-	addGameTask(&Game::playerPreyAction, player->getID(), preySlotId, preyAction, monsterIndex);
+
+	addGameTask(&Game::playerPreyAction, player->getID(), preySlotId, preyAction, monsterIndex, raceId);
 }
 
 void ProtocolGame::sendResourceData(ResourceType_t resourceType, int64_t amount)
@@ -1955,9 +1959,13 @@ void ProtocolGame::sendPreyData(uint8_t preySlotId)
 				msg.addByte(mType->info.outfit.lookLegs);
 				msg.addByte(mType->info.outfit.lookFeet);
 				msg.addByte(mType->info.outfit.lookAddons);
-			}
-			else {
-				return player->generatePreyData();
+			} else {
+				msg.add<uint16_t>(21);
+				msg.addByte(0);
+				msg.addByte(0);
+				msg.addByte(0);
+				msg.addByte(0);
+				msg.addByte(0);
 			}
 		}
 	}
@@ -1970,15 +1978,25 @@ void ProtocolGame::sendPreyData(uint8_t preySlotId)
 			msg.addByte(mType->info.outfit.lookLegs);
 			msg.addByte(mType->info.outfit.lookFeet);
 			msg.addByte(mType->info.outfit.lookAddons);
-		}
-		else {
-			return player->generatePreyData();
+		} else {
+			msg.add<uint16_t>(21);
+			msg.addByte(0);
+			msg.addByte(0);
+			msg.addByte(0);
+			msg.addByte(0);
+			msg.addByte(0);
 		}
 
 		msg.addByte(static_cast<uint8_t>(currentPreyData.bonusType));
 		msg.add<uint16_t>(currentPreyData.bonusValue);
 		msg.addByte(currentPreyData.bonusGrade);
 		msg.add<uint16_t>(currentPreyData.timeLeft);
+	} else if (currentPreyData.state == STATE_SELECTION_WILDCARD) {
+		std::vector<uint16_t> v_races = g_prey.getPreyRaces();
+		msg.add<uint16_t>(v_races.size());
+		for (const auto& race : v_races) {
+			msg.add<uint16_t>(race);
+		}
 	}
 
 	msg.add<uint16_t>(player->getFreeRerollTime(preySlotId));

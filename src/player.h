@@ -1355,8 +1355,12 @@ class Player final : public Creature, public Cylinder
 		void generatePreyData();
 		void setPreyData(std::vector<PreyData>&& preyData);
 		void serializePreyData(PropWriteStream& propWriteStream) const;
-		ReturnValue changePreyDataState(uint8_t preySlotId, PreyState state, uint8_t monsterIndex = 0);
+		ReturnValue changePreyDataState(uint8_t preySlotId, PreyState state, uint8_t monsterIndex = 0) {
+			return changePreyDataState(preySlotId, state, monsterIndex, "");
+		}
+		ReturnValue changePreyDataState(uint8_t preySlotId, PreyState state, uint8_t monsterIndex, std::string monsterName);
 		void updateRerollPrice();
+		ReturnValue rerollPreyDataWildcard(uint8_t preySlotId);
 		ReturnValue rerollPreyData(uint8_t preySlotId);
 		ReturnValue rerollPreyBonus(uint8_t preySlotId);
 		uint16_t getFreeRerollTime(uint8_t preySlotId);

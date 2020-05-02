@@ -5021,7 +5021,7 @@ void Player::generatePreyData()
 	}
 }
 
-ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uint8_t monsterIndex)
+ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uint8_t monsterIndex, std::string monsterName)
 {
 	if (preySlotId >= PREY_SLOTCOUNT) {
 		return RETURNVALUE_PREYINTERNALERROR;
@@ -5066,6 +5066,38 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 
 			success = true;
 		}
+	} 
+	else if ((currentPrey.state == STATE_SELECTION_WILDCARD) && state == STATE_ACTIVE) {
+		bool contemMonstro = false;
+		bool jaTemBonus = false;
+		for (const auto& mname : g_prey.getPreyNames()) {
+			if (strcasecmp(mname.c_str(), monsterName.c_str()) == 0) {
+				contemMonstro = true;
+				break;
+			}
+		}
+		for (uint8_t slotId = 0; slotId < PREY_SLOTCOUNT; slotId++) {
+			PreyData& anotherPrey = preyData[slotId];
+			if (strcasecmp(anotherPrey.preyMonster.c_str(), monsterName.c_str()) == 0) {
+				jaTemBonus = true;
+				break;
+			}
+		}
+		if (contemMonstro && !jaTemBonus) {
+			currentPrey.preyMonster = monsterName;
+			currentPrey.timeLeft = g_prey.getPreyDuration();
+			if (currentPrey.bonusType == BONUS_NONE) {
+				currentPrey.bonusGrade = uniform_random(1, 10);
+				const BonusEntry& bonus = g_prey.getAvailableBonuses()[uniform_random(0, static_cast<int32_t>(g_prey.getAvailableBonuses().size()) - 1)];
+				currentPrey.bonusType = bonus.type;
+				currentPrey.bonusValue = bonus.initialValue + bonus.step * (currentPrey.bonusGrade - 1);
+			}
+			success = true;
+		} else if (jaTemBonus) {
+			return RETURNVALUE_CHOSENMONSTERISALREADYINUSE;
+		} else {
+			return RETURNVALUE_PREYINTERNALERROR;
+		}
 	}
 	else if ((currentPrey.state == STATE_SELECTION || currentPrey.state == STATE_SELECTION_CHANGE_MONSTER) && state == STATE_ACTIVE) {
 		if (monsterIndex >= 0 && monsterIndex < currentPrey.preyList.size()) {
@@ -5087,6 +5119,8 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 	}
 	else if (state == STATE_INACTIVE || STATE_LOCKED) {
 		currentPrey.preyList.clear();
+		success = true;
+	} else if (state == STATE_SELECTION_WILDCARD) {
 		success = true;
 	}
 
@@ -5165,6 +5199,23 @@ ReturnValue Player::rerollPreyData(uint8_t preySlotId)
 	}
 
 	return RETURNVALUE_PREYINTERNALERROR;
+}
+
+ReturnValue Player::rerollPreyDataWildcard(uint8_t preySlotId)
+{
+	if (preySlotId >= PREY_SLOTCOUNT) {
+		return RETURNVALUE_PREYINTERNALERROR;
+	}
+
+	uint64_t rerollPrice = 5;
+	if (getBonusRerollCount() - rerollPrice < 0) {
+		return RETURNVALUE_NOTENOUGHMONEYFORREROLL;
+	}
+
+	setBonusRerollCount(getBonusRerollCount() - rerollPrice);
+	sendResourceData(RESOURCETYPE_PREY_BONUS_REROLLS, getBonusRerollCount());
+	changePreyDataState(preySlotId, STATE_SELECTION_WILDCARD);
+	return RETURNVALUE_NOERROR;
 }
 
 ReturnValue Player::rerollPreyBonus(uint8_t preySlotId)

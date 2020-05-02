@@ -217,6 +217,9 @@ void mainLoader(int argc, char* argv[], ServiceManager* services)
 		return;
 	}
 
+	std::cout << ">> Loading monsters race id" << std::endl;
+	g_game.loadRaces();
+
 	std::cout << ">> Loading monsters" << std::endl;
 	if (!g_monsters.loadFromXml()) {
 		startupErrorMessage("Unable to load monsters!");

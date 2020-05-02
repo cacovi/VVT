@@ -6917,26 +6917,38 @@ void Game::playerRequestResourceData(uint32_t playerId, ResourceType_t resourceT
 	}
 }
 
-void Game::playerPreyAction(uint32_t playerId, uint8_t preySlotId, PreyAction_t preyAction, uint8_t monsterIndex)
+void Game::playerPreyAction(uint32_t playerId, uint8_t preySlotId, PreyAction_t preyAction, uint8_t monsterIndex, uint16_t raceId)
 {
 	Player* player = getPlayerByID(playerId);
 	if (!player) {
 		return;
 	}
 
+	MonsterType* monsterType = nullptr;
 	ReturnValue returnValue = RETURNVALUE_NOERROR;
 	switch (preyAction) {
-	case PREY_ACTION_LISTREROLL:
-		returnValue = player->rerollPreyData(preySlotId);
-		break;
-	case PREY_ACTION_BONUSREROLL:
-		returnValue = player->rerollPreyBonus(preySlotId);
-		break;
-	case PREY_ACTION_MONSTERSELECTION:
-		returnValue = player->changePreyDataState(preySlotId, STATE_ACTIVE, monsterIndex);
-		break;
-	default:
-		break;
+		case PREY_ACTION_LISTREROLL:
+			returnValue = player->rerollPreyData(preySlotId);
+			break;
+		case PREY_ACTION_BONUSREROLL:
+			returnValue = player->rerollPreyBonus(preySlotId);
+			break;
+		case PREY_ACTION_MONSTERSELECTION:
+			returnValue = player->changePreyDataState(preySlotId, STATE_ACTIVE, monsterIndex);
+			break;
+		case NEW_BONUS_WILDCARD:
+			returnValue = player->rerollPreyDataWildcard(preySlotId);
+			break;
+		case NEW_BONUS_SELECTIONWILDCARD:
+			monsterType = g_monsters.getMonsterTypeByRace(raceId);
+			if (monsterType) {
+				returnValue = player->changePreyDataState(preySlotId, STATE_ACTIVE, monsterIndex, monsterType->name);
+			} else {
+				returnValue = RETURNVALUE_PREYINTERNALERROR;
+			}
+			break;
+		default:
+			break;
 	}
 
 	if (returnValue != RETURNVALUE_NOERROR) {
@@ -7369,4 +7381,40 @@ void Game::setBoostMonster(std::string monstername, uint16_t monsterid)
 
 	boostRace = monsterid;
 	boostMonster = monstername;
+}
+
+void Game::loadRaces()
+{
+	pugi::xml_document doc;
+	pugi::xml_parse_result result = doc.load_file("data/XML/races.xml");
+	if (!result) {
+		printXMLError("Error - Game::loadRaces", "data/XML/races.xml", result);
+		return;
+	}
+
+	monsterRace.clear();
+
+	for (auto raceNode : doc.child("races").children()) {
+		if (strcasecmp(raceNode.name(), "race") == 0) {
+			uint16_t raceid = 0;
+			pugi::xml_attribute idAttribute = raceNode.attribute("id");
+			if (!idAttribute) {
+				std::cout << "[Warning - Game::loadRaces] Missing id from race" << std::endl;
+				continue;
+			}
+
+			raceid = pugi::cast<uint16_t>(idAttribute.value());
+
+			pugi::xml_attribute nameBase = raceNode.attribute("name");
+			if (!nameBase) {
+				std::cout << "[Warning - Bestiary::loadFromXml] Missing name" << std::endl;
+				continue;
+			}
+
+			if (raceid > 0) {
+				monsterRace[nameBase.as_string()] = raceid;
+			}
+
+		}
+	}
 }

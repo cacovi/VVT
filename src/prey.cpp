@@ -50,6 +50,7 @@ void Prey::reset()
 	preyDuration = 120;
 	rerollPricePerLevel = 50;
 	preyNames.clear();
+	preyRaceid.clear();
 	availableBonuses.clear();
 }
 
@@ -116,6 +117,9 @@ bool Prey::loadFromXml()
 				std::string monsterName = attr.as_string();
 				if (MonsterType* mType = g_monsters.getMonsterType(monsterName)) {
 					preyNames.emplace_back(mType->name);
+					if (mType->info.raceid > 0) {
+						preyRaceid.emplace_back(mType->info.raceid);
+					}
 				}
 				else {
 					std::cout << "[Warning - Prey::loadFromXml] Monster with name " << monsterName << " not found." << std::endl;
@@ -124,6 +128,8 @@ bool Prey::loadFromXml()
 		}
 		std::sort(preyNames.begin(), preyNames.end());
 		preyNames.erase(std::unique(preyNames.begin(), preyNames.end()), preyNames.end());
+		std::sort(preyRaceid.begin(), preyRaceid.end());
+		preyRaceid.erase(std::unique(preyRaceid.begin(), preyRaceid.end()), preyRaceid.end());
 	}
 
 	return true;
