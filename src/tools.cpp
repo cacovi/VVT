@@ -1303,6 +1303,9 @@ const char* getReturnMessage(ReturnValue value)
 		case RETURNVALUE_NOAVAILABLEBONUSREROLL:
 			return "You don't have any available bonus reroll.";
 
+		case RETURNVALUE_CHOSENMONSTERISALREADYINUSE:
+			return "Chosen monster is already in use.";
+
 		default: // RETURNVALUE_NOTPOSSIBLE, etc
 			return "Sorry, not possible.";
 	}
