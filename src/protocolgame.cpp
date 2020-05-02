@@ -1928,7 +1928,7 @@ void ProtocolGame::sendBasicData()
 	writeToOutputBuffer(msg);
 }
 
-void ProtocolGameBase::sendPreyData(uint8_t preySlotId)
+void ProtocolGame::sendPreyData(uint8_t preySlotId)
 {
 	if (preySlotId >= PREY_SLOTCOUNT) {
 		return;
