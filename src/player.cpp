@@ -5044,8 +5044,7 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 
 		currentPrey.preyList = std::move(selectRandom(g_prey.getPreyNames(), 9, elim));
 		success = true;
-	}
-	else if (currentPrey.state == STATE_ACTIVE && state == STATE_SELECTION) {
+	} else if (currentPrey.state == STATE_ACTIVE && state == STATE_SELECTION) {
 		auto it = std::find(currentPrey.preyList.begin(), currentPrey.preyList.end(), currentPrey.preyMonster);
 		if (it != currentPrey.preyList.end()) {
 			currentPrey.preyList.erase(it);
@@ -5066,8 +5065,37 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 
 			success = true;
 		}
-	} 
-	else if ((currentPrey.state == STATE_SELECTION_WILDCARD) && state == STATE_ACTIVE) {
+	} else if ((currentPrey.state == STATE_SELECTION || currentPrey.state == STATE_SELECTION_CHANGE_MONSTER) && state == STATE_ACTIVE) {
+		if (monsterIndex >= 0 && monsterIndex < currentPrey.preyList.size()) {
+			std::string monster = currentPrey.preyList[monsterIndex];
+			bool jaTemBonus = false;
+			for (uint8_t slotId = 0; slotId < PREY_SLOTCOUNT; slotId++) {
+				PreyData& anotherPrey = preyData[slotId];
+				if (strcasecmp(anotherPrey.preyMonster.c_str(), monster.c_str()) == 0) {
+					jaTemBonus = true;
+					break;
+				}
+			}
+
+			if (!jaTemBonus) {
+				currentPrey.preyMonster = monster;
+				currentPrey.timeLeft = g_prey.getPreyDuration();
+	
+				if (currentPrey.state == STATE_SELECTION) {
+					currentPrey.bonusGrade = uniform_random(1, 10);
+					const BonusEntry& bonus = g_prey.getAvailableBonuses()[uniform_random(0, static_cast<int32_t>(g_prey.getAvailableBonuses().size()) - 1)];
+					currentPrey.bonusType = bonus.type;
+					currentPrey.bonusValue = bonus.initialValue + bonus.step * (currentPrey.bonusGrade - 1);
+				}
+	
+				success = true;
+			} else {
+				return RETURNVALUE_CHOSENMONSTERISALREADYINUSE;
+			}
+		} else {
+			return RETURNVALUE_PREYINTERNALERROR;
+		}
+	} else if ((currentPrey.state == STATE_SELECTION_WILDCARD) && state == STATE_ACTIVE) {
 		bool contemMonstro = false;
 		bool jaTemBonus = false;
 		for (const auto& mname : g_prey.getPreyNames()) {
@@ -5098,26 +5126,7 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 		} else {
 			return RETURNVALUE_PREYINTERNALERROR;
 		}
-	}
-	else if ((currentPrey.state == STATE_SELECTION || currentPrey.state == STATE_SELECTION_CHANGE_MONSTER) && state == STATE_ACTIVE) {
-		if (monsterIndex >= 0 && monsterIndex < currentPrey.preyList.size()) {
-			currentPrey.preyMonster = currentPrey.preyList[monsterIndex];
-			currentPrey.timeLeft = g_prey.getPreyDuration();
-
-			if (currentPrey.state == STATE_SELECTION) {
-				currentPrey.bonusGrade = uniform_random(1, 10);
-				const BonusEntry& bonus = g_prey.getAvailableBonuses()[uniform_random(0, static_cast<int32_t>(g_prey.getAvailableBonuses().size()) - 1)];
-				currentPrey.bonusType = bonus.type;
-				currentPrey.bonusValue = bonus.initialValue + bonus.step * (currentPrey.bonusGrade - 1);
-			}
-
-			success = true;
-		}
-		else {
-			return RETURNVALUE_PREYINTERNALERROR;
-		}
-	}
-	else if (state == STATE_INACTIVE || STATE_LOCKED) {
+	} else if (state == STATE_INACTIVE || STATE_LOCKED) {
 		currentPrey.preyList.clear();
 		success = true;
 	} else if (state == STATE_SELECTION_WILDCARD) {
@@ -5131,6 +5140,7 @@ ReturnValue Player::changePreyDataState(uint8_t preySlotId, PreyState state, uin
 	}
 	return RETURNVALUE_PREYINTERNALERROR;
 }
+
 
 void Player::setPreyData(std::vector<PreyData>&& preyData)
 {
