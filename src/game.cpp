@@ -3762,7 +3762,7 @@ void Game::playerLootCorpse(uint32_t playerId, const Position& pos, uint16_t spr
 
 	player->setNextActionTask(nullptr);
 
-	Thing* thing = internalGetThing(player, pos, stackPos, spriteId, STACKPOS_USEITEM);
+	Thing* thing = internalGetThing(player, pos, stackPos, spriteId, STACKPOS_FIND_THING);
 	if (!thing) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
 		return;
