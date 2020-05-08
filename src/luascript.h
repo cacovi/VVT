@@ -1066,6 +1066,8 @@ class LuaScriptInterface
 
 		static int luaPlayerGetPet(lua_State* L);
 		static int luaPlayerSetPet(lua_State* L);
+		static int luaPlayerInPrivateWar(lua_State* L);
+		static int luaPlayerSetPrivateWar(lua_State* L);
 
 		// Monster
 		static int luaMonsterCreate(lua_State* L);
@@ -1126,6 +1128,8 @@ class LuaScriptInterface
 
 		static int luaGuildGetMotd(lua_State* L);
 		static int luaGuildSetMotd(lua_State* L);
+		static int luaGuildGetPrivateWarRival(lua_State* L);
+		static int luaGuildSetPrivateWarRival(lua_State* L);
 
 		// Group
 		static int luaGroupCreate(lua_State* L);

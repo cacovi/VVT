@@ -4075,6 +4075,11 @@ void Player::addUnjustifiedDead(const Player* attacked)
 		return;
 	}
 
+	if (inprivatewar) {
+		sendTextMessage(MESSAGE_EVENT_ADVANCE, "Warning! War System is over, please caution!");
+		return;
+	}
+
 	sendTextMessage(MESSAGE_EVENT_ADVANCE, "Warning! The murder of " + attacked->getName() + " was not justified.");
 
 	unjustifiedKills.emplace_back(attacked->getGUID(), time(nullptr), true);

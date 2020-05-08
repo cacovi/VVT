@@ -74,6 +74,12 @@ class Guild
 			this->motd = newMotd;
 		}
 
+		uint32_t getPrivateWarRival() const {
+			return privateWarRival;
+		}
+		
+		void setPrivateWarRival(uint32_t rival);
+
 	private:
 		std::list<Player*> membersOnline;
 		std::vector<GuildRank_ptr> ranks;
@@ -81,6 +87,7 @@ class Guild
 		std::string motd;
 		uint32_t id;
 		uint32_t memberCount = 0;
+		uint32_t privateWarRival = 0;
 };
 
 #endif

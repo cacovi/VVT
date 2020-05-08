@@ -2663,6 +2663,9 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "getBonusRerollCount", LuaScriptInterface::luaPlayerGetBonusRerollCount);
 	registerMethod("Player", "setBonusRerollCount", LuaScriptInterface::luaPlayerSetBonusRerollCount);
 
+	registerMethod("Player", "inPrivateWar", LuaScriptInterface::luaPlayerInPrivateWar);
+	registerMethod("Player", "setPrivateWar", LuaScriptInterface::luaPlayerSetPrivateWar);
+
 	registerMethod("Player", "getPet", LuaScriptInterface::luaPlayerGetPet);
 	registerMethod("Player", "setPet", LuaScriptInterface::luaPlayerSetPet);
 
@@ -2727,6 +2730,9 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Guild", "getMotd", LuaScriptInterface::luaGuildGetMotd);
 	registerMethod("Guild", "setMotd", LuaScriptInterface::luaGuildSetMotd);
+
+	registerMethod("Guild", "getPrivateWarRival", LuaScriptInterface::luaGuildGetPrivateWarRival);
+	registerMethod("Guild", "setPrivateWarRival", LuaScriptInterface::luaGuildSetPrivateWarRival);
 
 	// Group
 	registerClass("Group", "", LuaScriptInterface::luaGroupCreate);
@@ -11171,6 +11177,33 @@ int LuaScriptInterface::luaPlayerSetBonusRerollCount(lua_State* L)
 	return 1;
 }
 
+int LuaScriptInterface::luaPlayerInPrivateWar(lua_State* L)
+{
+	// player:inPrivateWar()
+	Player* player =  getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	pushBoolean(L, player->inPrivateWar());
+	return 1;
+}
+
+int LuaScriptInterface::luaPlayerSetPrivateWar(lua_State* L)
+{
+	// player:setPrivateWar(bool)
+	Player* player =  getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	player->setPrivateWar(getBoolean(L, 2, false));
+	pushBoolean(L, true);
+	return 1;
+}
+
 int LuaScriptInterface::luaPlayerGetPet(lua_State* L)
 {
 	// player:getPet()
@@ -11774,6 +11807,32 @@ int LuaScriptInterface::luaGuildSetMotd(lua_State* L)
 	Guild* guild = getUserdata<Guild>(L, 1);
 	if (guild) {
 		guild->setMotd(motd);
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaGuildGetPrivateWarRival(lua_State* L)
+{
+	// guild:getPrivateWarRival()
+	Guild* guild = getUserdata<Guild>(L, 1);
+	if (guild) {
+		lua_pushnumber(L, guild->getPrivateWarRival());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaGuildSetPrivateWarRival(lua_State* L)
+{
+	// guild:setPrivateWarRival(rival)
+	Guild* guild = getUserdata<Guild>(L, 1);
+	if (guild) {
+		uint32_t id = getNumber<uint32_t>(L, 2);
+		guild->setPrivateWarRival(id);
 		pushBoolean(L, true);
 	} else {
 		lua_pushnil(L);

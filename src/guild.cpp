@@ -83,3 +83,7 @@ void Guild::addRank(uint32_t rankId, const std::string& rankName, uint8_t level)
 {
 	ranks.emplace_back(std::make_shared<GuildRank>(rankId,rankName,level));
 }
+
+void Guild::setPrivateWarRival(uint32_t rival) {
+	privateWarRival = rival;
+}

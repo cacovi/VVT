@@ -1523,6 +1523,14 @@ class Player final : public Creature, public Cylinder
 		bool acceptLoot(Item* item);
 		void checkLootContainers(const Item* item);
 
+		bool inPrivateWar() const {
+			return inprivatewar;
+		}
+
+		void setPrivateWar(bool b) {
+			inprivatewar = b;
+		}
+
 		void setPet(Creature* pet, int32_t decay = 900000)
 		{
 			if (!pet) {
@@ -1719,6 +1727,7 @@ class Player final : public Creature, public Cylinder
 		fightMode_t fightMode = FIGHTMODE_ATTACK;
 		AccountType_t accountType = ACCOUNT_TYPE_NORMAL;
 
+		bool inprivatewar = false;
 		bool chaseMode = false;
 		bool secureMode = false;
 		bool inMarket = false;
