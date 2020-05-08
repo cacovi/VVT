@@ -1397,13 +1397,14 @@ MonsterType* Monsters::getMonsterType(const std::string& name)
 
 MonsterType* Monsters::getMonsterTypeByRace(uint16_t raceid)
 {
-	auto it = raceidMonsters.find(raceid);
-	if (it != raceidMonsters.end()) {
-		return getMonsterType(it->second);
+	for (auto& it : monsters) {
+		if (it.second.info.raceid == raceid) {
+			return &it.second;
+		}
 	}
-
 	return nullptr;
 }
+
 
 void Monsters::addMonsterType(const std::string& name, MonsterType* mType)
 {
