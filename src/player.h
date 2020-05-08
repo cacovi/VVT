@@ -1705,7 +1705,7 @@ class Player final : public Creature, public Cylinder
 		uint16_t staminaXpBoost = 100;
 		int16_t lastDepotId = -1;
 		
-		std::unordered_map<LootType_t, Container*> quicklootContainers;
+		std::map<LootType_t, Container*> quicklootContainers;
 		std::vector<uint16_t> itemLootVec;
 		
 		uint8_t soul = 0;
