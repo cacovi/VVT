@@ -4154,16 +4154,15 @@ double Player::getLostPercent() const
 	double lossPercent;
 	if (level >= 25) {
 		double tmpLevel = level + (levelPercent / 100.);
-		lossPercent = ((tmpLevel + 50) * 50 * ((tmpLevel * tmpLevel) - (5 * tmpLevel) + 8)) / experience;
+		lossPercent = static_cast<double>((tmpLevel + 50) * 50 * ((tmpLevel * tmpLevel) - (5 * tmpLevel) + 8)) / experience;
 	} else {
-		lossPercent = 5;
+		lossPercent = 10;
 	}
 
 	double percentReduction = 0;
 	if (isPromoted()) {
 		percentReduction += 30;
 	}
-
 	percentReduction += blessingCount * 8;
 	return lossPercent * (1 - (percentReduction / 100.)) / 100.;
 }
