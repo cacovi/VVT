@@ -2658,6 +2658,7 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Player", "getPreyState", LuaScriptInterface::luaPlayerGetPreyState);
 	registerMethod("Player", "changePreyState", LuaScriptInterface::luaPlayerChangePreyState);
+	registerMethod("Player", "getPreyBonusLoot", LuaScriptInterface::luaPlayerGetPreyBonusLoot);
 
 	registerMethod("Player", "getBonusRerollCount", LuaScriptInterface::luaPlayerGetBonusRerollCount);
 	registerMethod("Player", "setBonusRerollCount", LuaScriptInterface::luaPlayerSetBonusRerollCount);
@@ -11123,6 +11124,25 @@ int LuaScriptInterface::luaPlayerChangePreyState(lua_State* L)
 	}
 	return 1;
 }
+
+int LuaScriptInterface::luaPlayerGetPreyBonusLoot(lua_State* L)
+{
+	// player:getPreyBonusLoot(monsterType)
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		MonsterType* monsterType = getUserdata<MonsterType>(L, 2);
+		if (!monsterType) {
+			lua_pushnumber(L, 0);
+			return 1;
+		}
+
+		lua_pushnumber(L, player->getPreyBonusLoot(monsterType));
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 
 int LuaScriptInterface::luaPlayerGetBonusRerollCount(lua_State* L)
 {
