@@ -7418,3 +7418,13 @@ void Game::loadRaces()
 		}
 	}
 }
+
+Guild* Game::getGuildByName(std::string name) const
+{
+	for (auto it : guilds) {
+		if (asLowerCaseString(it.second->getName()) == asLowerCaseString(name)) {
+			return it.second;
+		}
+	}
+	return nullptr;
+}

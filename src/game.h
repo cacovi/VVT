@@ -542,6 +542,7 @@ class Game
 
 		Guild* getGuild(uint32_t id) const;
 		void addGuild(Guild* guild);
+		Guild* getGuildByName(std::string name) const;
 		void removeGuild(uint32_t guildId);
 		void decreaseBrowseFieldRef(const Position& pos);
 
