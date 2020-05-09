@@ -11670,10 +11670,14 @@ int LuaScriptInterface::luaNpcSetSpeechBubble(lua_State* L)
 // Guild
 int LuaScriptInterface::luaGuildCreate(lua_State* L)
 {
-	// Guild(id)
-	uint32_t id = getNumber<uint32_t>(L, 2);
+	// Guild(id OR name)
+	Guild* guild;
+	if (isNumber(L, 2)) {
+		guild = g_game.getGuild(getNumber<uint32_t>(L, 2));
+	} else {
+		guild = g_game.getGuildByName(getString(L, 2));
+	}
 
-	Guild* guild = g_game.getGuild(id);
 	if (guild) {
 		pushUserdata<Guild>(L, guild);
 		setMetatable(L, -1, "Guild");
