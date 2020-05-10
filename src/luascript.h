@@ -547,6 +547,7 @@ class LuaScriptInterface
 		static int luaGameCreateItem(lua_State* L);
 		static int luaGameCreateContainer(lua_State* L);
 		static int luaGameCreateMonster(lua_State* L);
+		static int luaGameGenerateNpc(lua_State* L);
 		static int luaGameCreateNpc(lua_State* L);
 		static int luaGameCreateTile(lua_State* L);
 		static int luaGameCreateMonsterType(lua_State* L);
@@ -563,6 +564,7 @@ class LuaScriptInterface
 
 		static int luaGameGetItemByClientId(lua_State* L);
 
+        static int luaGameGetOfflinePlayer(lua_State* L);
 		static int luaGameItemidHasMoveevent(lua_State* L);
 		static int luaGameHasEffect(lua_State* L);
 		static int luaGameHasDistanceEffect(lua_State* L);
@@ -1069,6 +1071,8 @@ class LuaScriptInterface
 		static int luaPlayerInPrivateWar(lua_State* L);
 		static int luaPlayerSetPrivateWar(lua_State* L);
 
+        static int luaPlayerIsOffline(lua_State* L);
+		
 		// Monster
 		static int luaMonsterCreate(lua_State* L);
 
@@ -1114,6 +1118,9 @@ class LuaScriptInterface
 
 		static int luaNpcGetSpeechBubble(lua_State* L);
 		static int luaNpcSetSpeechBubble(lua_State* L);
+		
+		static int luaNpcSetName(lua_State* L);
+		static int luaNpcPlace(lua_State* L);
 
 		// Guild
 		static int luaGuildCreate(lua_State* L);
@@ -1207,7 +1214,7 @@ class LuaScriptInterface
 		static int luaHouseSetAccessList(lua_State* L);
 
 		static int luaHouseKickPlayer(lua_State* L);
-
+        static int luaHouseIsInvited(lua_State* L);
 		// ItemType
 		static int luaItemTypeCreate(lua_State* L);
 
@@ -1264,6 +1271,7 @@ class LuaScriptInterface
 		static int luaItemTypeGetBaseSpeed(lua_State* L);
 		static int luaItemTypeGetDecayTime(lua_State* L);
 		static int luaItemTypeGetShowDuration(lua_State* L);
+		static int luaItemTypeGetWrapableTo(lua_State* L);
 
 		static int luaItemTypeHasSubType(lua_State* L);
 
