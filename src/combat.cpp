@@ -599,8 +599,9 @@ void Combat::combatTileEffects(const SpectatorHashSet& spectators, Creature* cas
 				break;
 		}
 
+		Player* casterPlayer = nullptr;
+		
 		if (caster) {
-			Player* casterPlayer;
 			if (caster->isSummon()) {
 				casterPlayer = caster->getMaster()->getPlayer();
 			} else {
@@ -628,7 +629,13 @@ void Combat::combatTileEffects(const SpectatorHashSet& spectators, Creature* cas
 
 		Item* item = Item::CreateItem(itemId);
 		if (caster) {
-			item->setOwner(caster->getID());
+			item->setOwner(caster->getCombatID());
+			if (casterPlayer) {
+				if(itemId == ITEM_MAGICWALL || itemId == ITEM_WILDGROWTH){
+					const std::string& casterName = casterPlayer->getName();
+					item->setSpecialDescription("Caster: " + casterName);
+				}	
+			}
 		}
 
 		ReturnValue ret = g_game.internalAddItem(tile, item);
