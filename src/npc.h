@@ -142,11 +142,6 @@ class Npc final : public Creature
 		const std::string& getName() const final {
 			return name;
 		}
-		
-		void setName(std::string newName) {
-			name = newName;
-		}
-		
 		const std::string& getNameDescription() const final {
 			return name;
 		}
