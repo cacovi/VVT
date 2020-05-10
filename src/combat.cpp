@@ -629,7 +629,7 @@ void Combat::combatTileEffects(const SpectatorHashSet& spectators, Creature* cas
 
 		Item* item = Item::CreateItem(itemId);
 		if (caster) {
-			item->setOwner(caster->getCombatID());
+			item->setOwner(caster->getID());
 			if (casterPlayer) {
 				if(itemId == ITEM_MAGICWALL || itemId == ITEM_WILDGROWTH){
 					const std::string& casterName = casterPlayer->getName();
