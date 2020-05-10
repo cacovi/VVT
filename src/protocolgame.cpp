@@ -490,7 +490,6 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 		case 0xCC: parseSeekInContainer(msg); break;
 		case 0xD2: addGameTask(&Game::playerRequestOutfit, player->getID()); break;
 		case 0xD3: parseSetOutfit(msg); break;
-//g_dispatcher.addTask(createTask(std::bind(&Modules::executeOnRecvbyte, g_modules, player, msg, recvbyte)));
 		case 0xD3: g_dispatcher.addTask(createTask(std::bind(&ProtocolGame::parseSetOutfit, this, msg))); break;
 		case 0xD4: parseToggleMount(msg); break;
 		case 0xD5: parseApplyImbuemente(msg); break;
