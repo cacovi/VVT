@@ -1594,7 +1594,7 @@ bool Game::removeMoney(Cylinder* cylinder, uint64_t money, uint32_t flags /*= 0*
 		balance = player->getBankBalance();
 	}
 
-Player* player = useBalance ? dynamic_cast<Player*>(cylinder) : nullptr;
+	Player* player = useBalance ? dynamic_cast<Player*>(cylinder) : nullptr;
 	uint64_t balance = 0;
 	if (useBalance && player) {
 		balance = player->getBankBalance();
@@ -1620,6 +1620,10 @@ Player* player = useBalance ? dynamic_cast<Player*>(cylinder) : nullptr;
 			internalRemoveItem(item);
 			break;
 		}
+	}
+	
+	if (useBalance && player && player->getBankBalance() >= money) {
+		player->setBankBalance(player->getBankBalance() - money);
 	}
 
 	if (useBalance && player && player->getBankBalance() >= money) {
@@ -6132,7 +6136,6 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 		}
 
 		g_game.removeMoney(player, totalPrice, 0, true);
-	}
 
 	IOMarket::createOffer(player->getGUID(), static_cast<MarketAction_t>(type), it.id, amount, price, anonymous);
 
@@ -6357,7 +6360,7 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		}
 	} else {//MARKETACTION_SELL
 	
-	    Player* sellerPlayer = getPlayerByGUID(offer.playerId);
+	Player* sellerPlayer = getPlayerByGUID(offer.playerId);
 		if (player == sellerPlayer) {
 			player->sendFYIBox("You cannot accept your own offer.");
 			return;
