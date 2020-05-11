@@ -7418,3 +7418,4 @@ Guild* Game::getGuildByName(std::string name) const
 		}
 	}
 	return nullptr;
+	}
