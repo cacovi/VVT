@@ -1594,15 +1594,9 @@ bool Game::removeMoney(Cylinder* cylinder, uint64_t money, uint32_t flags /*= 0*
 		balance = player->getBankBalance();
 	}
 
-	Player* player = useBalance ? dynamic_cast<Player*>(cylinder) : nullptr;
-	uint64_t balance = 0;
-	if (useBalance && player) {
-		balance = player->getBankBalance();
-	}
-
 	if (moneyCount + balance < money) {
 		return false;
-	}
+    }
 
 	for (const auto& moneyEntry : moneyMap) {
 		Item* item = moneyEntry.second;
@@ -1621,10 +1615,7 @@ bool Game::removeMoney(Cylinder* cylinder, uint64_t money, uint32_t flags /*= 0*
 			break;
 		}
 	}
-	
-	if (useBalance && player && player->getBankBalance() >= money) {
-		player->setBankBalance(player->getBankBalance() - money);
-	}
+	moneyMap.clear();
 
 	if (useBalance && player && player->getBankBalance() >= money) {
 		player->setBankBalance(player->getBankBalance() - money);
@@ -6125,7 +6116,17 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 			}
 		}
 
-		g_game.removeMoney(player, fee, 0, true);
+		if(fee <= player->getBankBalance())
+		{
+			player->setBankBalance(player->getBankBalance() - fee);
+		}
+		else
+		{
+			uint64_t remainsFee = 0;
+			remainsFee = fee - player->getBankBalance();
+			player->setBankBalance(0);
+			g_game.removeMoney(player, remainsFee);
+		}
 		
 	} else {
 
@@ -6135,7 +6136,18 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 			return;
 		}
 
-		g_game.removeMoney(player, totalPrice, 0, true);
+		// Have enough money on the bank
+		if(totalPrice <= player->getBankBalance())
+		{
+			player->setBankBalance(player->getBankBalance() - totalPrice);
+		}
+		else
+		{
+			uint64_t remainsPrice = 0;
+			remainsPrice = totalPrice - player->getBankBalance();
+			g_game.removeMoney(player, remainsPrice);
+		}
+	}
 
 	IOMarket::createOffer(player->getGUID(), static_cast<MarketAction_t>(type), it.id, amount, price, anonymous);
 
@@ -6276,11 +6288,6 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		}
 
 		Player* buyerPlayer = getPlayerByGUID(offer.playerId);
-		if (player == buyerPlayer) {
-			player->sendFYIBox("You cannot accept your own offer.");
-			return;
-		}
-		
 		if (!buyerPlayer) {
 			buyerPlayer = new Player(nullptr);
 			if (!IOLoginData::loadPlayerById(buyerPlayer, offer.playerId)) {
@@ -6359,12 +6366,6 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 			delete buyerPlayer;
 		}
 	} else {//MARKETACTION_SELL
-	
-	Player* sellerPlayer = getPlayerByGUID(offer.playerId);
-		if (player == sellerPlayer) {
-			player->sendFYIBox("You cannot accept your own offer.");
-			return;
-		}
 		
 		if (totalPrice > (player->getBankBalance() + player->getMoney())) {
 			return;
@@ -6415,6 +6416,7 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 			}
 		}
 
+		Player* sellerPlayer = getPlayerByGUID(offer.playerId);
 		if (sellerPlayer) {
 			sellerPlayer->setBankBalance(sellerPlayer->getBankBalance() + totalPrice);
 			if (it.id == ITEM_STORE_COIN) {
@@ -7425,4 +7427,3 @@ Guild* Game::getGuildByName(std::string name) const
 		}
 	}
 	return nullptr;
-}
