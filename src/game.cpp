@@ -6115,6 +6115,18 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 				}
 			}
 		}
+
+		if(fee <= player->getBankBalance())
+		{
+			player->setBankBalance(player->getBankBalance() - fee);
+		}
+		else
+		{
+			uint64_t remainsFee = 0;
+			remainsFee = fee - player->getBankBalance();
+			player->setBankBalance(0);
+			g_game.removeMoney(player, remainsFee);
+		}
 		
 		g_game.removeMoney(player, fee, 0, true);
 		
@@ -6126,6 +6138,17 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 			return;
 		}
 
+		// Have enough money on the bank
+		if(totalPrice <= player->getBankBalance())
+		{
+			player->setBankBalance(player->getBankBalance() - totalPrice);
+		}
+		else
+		{
+			uint64_t remainsPrice = 0;
+			remainsPrice = totalPrice - player->getBankBalance();
+			g_game.removeMoney(player, remainsPrice);
+		}
 		g_game.removeMoney(player, totalPrice, 0, true);
 	}
 
