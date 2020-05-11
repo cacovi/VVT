@@ -6128,6 +6128,8 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 			g_game.removeMoney(player, remainsFee);
 		}
 		
+		g_game.removeMoney(player, fee, 0, true);
+		
 	} else {
 
 		uint64_t totalPrice = price * amount;
@@ -6147,6 +6149,7 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 			remainsPrice = totalPrice - player->getBankBalance();
 			g_game.removeMoney(player, remainsPrice);
 		}
+		g_game.removeMoney(player, totalPrice, 0, true);
 	}
 
 	IOMarket::createOffer(player->getGUID(), static_cast<MarketAction_t>(type), it.id, amount, price, anonymous);
@@ -6288,6 +6291,11 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		}
 
 		Player* buyerPlayer = getPlayerByGUID(offer.playerId);
+		if (player == buyerPlayer) {
+			player->sendFYIBox("You cannot accept your own offer.");
+			return;
+		}
+		
 		if (!buyerPlayer) {
 			buyerPlayer = new Player(nullptr);
 			if (!IOLoginData::loadPlayerById(buyerPlayer, offer.playerId)) {
@@ -6366,6 +6374,12 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 			delete buyerPlayer;
 		}
 	} else {//MARKETACTION_SELL
+	
+	Player* sellerPlayer = getPlayerByGUID(offer.playerId);
+		if (player == sellerPlayer) {
+			player->sendFYIBox("You cannot accept your own offer.");
+			return;
+		}
 		
 		if (totalPrice > (player->getBankBalance() + player->getMoney())) {
 			return;
@@ -6416,7 +6430,7 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 			}
 		}
 
-		Player* sellerPlayer = getPlayerByGUID(offer.playerId);
+
 		if (sellerPlayer) {
 			sellerPlayer->setBankBalance(sellerPlayer->getBankBalance() + totalPrice);
 			if (it.id == ITEM_STORE_COIN) {
