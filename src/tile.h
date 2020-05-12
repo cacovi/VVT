@@ -97,7 +97,6 @@ class TileItemVector : private ItemVector
 		using ItemVector::const_iterator;
 		using ItemVector::reverse_iterator;
 		using ItemVector::const_reverse_iterator;
-		using ItemVector::empty;
 
 		iterator getBeginDownItem() {
 			return begin();
