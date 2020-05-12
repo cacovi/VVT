@@ -3881,6 +3881,19 @@ void Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 	}
 }
 
+std::unordered_set<Tile*> getTilesToClean() const {
+			return tilesToClean;
+		}
+		void addTileToClean(Tile* tile) {
+			tilesToClean.emplace(tile);
+		}
+		void removeTileToClean(Tile* tile) {
+			tilesToClean.erase(tile);
+		}
+		void clearTilesToClean() {
+			tilesToClean.clear();
+		}
+
 bool Game::playerSaySpell(Player* player, SpeakClasses type, const std::string& text)
 {
 	std::string words = text;
