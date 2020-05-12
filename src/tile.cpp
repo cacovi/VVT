@@ -34,8 +34,8 @@
 #include "movement.h"
 #include "teleport.h"
 #include "trashholder.h"
-#include "configmanager.h"
 #include "housetile.h"
+#include "configmanager.h"
 
 extern Game g_game;
 extern ConfigManager g_config;
