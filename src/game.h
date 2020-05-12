@@ -572,6 +572,19 @@ class Game
 
 		std::forward_list<Item*> toDecayItems;
 		std::forward_list<Item*> toImbuedItems;
+		
+		std::unordered_set<Tile*> getTilesToClean() const {
+			return tilesToClean;
+		}
+		void addTileToClean(Tile* tile) {
+			tilesToClean.emplace(tile);
+		}
+		void removeTileToClean(Tile* tile) {
+			tilesToClean.erase(tile);
+		}
+		void clearTilesToClean() {
+			tilesToClean.clear();
+		}
 
 		bool playerCalledSpell(Player* player, const std::string& text);
 	protected:
@@ -620,6 +633,8 @@ class Game
 		std::map<Item*, uint32_t> tradeItems;
 
 		std::map<uint32_t, BedItem*> bedSleepersMap;
+		
+		std::unordered_set<Tile*> tilesToClean;
 
 		ModalWindow offlineTrainingWindow { std::numeric_limits<uint32_t>::max(), "Choose a Skill", "Please choose a skill:" };
 
