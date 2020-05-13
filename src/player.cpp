@@ -4317,7 +4317,7 @@ bool Player::isGuildMate(const Player* player) const
 	if (!player || !guild) {
 		return false;
 	}
-	return guild == player->guild;
+	return guild == player->guild && getGuildEmblem(player) == GUILDEMBLEM_MEMBER;
 }
 
 void Player::sendPlayerPartyIcons(Player* player)
