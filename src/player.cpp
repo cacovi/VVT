@@ -3627,6 +3627,8 @@ void Player::onAttackedCreature(Creature* target)
 				pzLocked = true;
 				sendIcons();
 			}
+			
+			targetPlayer->addInFightTicks();
 
 			if (!Combat::isInPvpZone(this, targetPlayer) && !isInWar(targetPlayer)) {
 				addAttacked(targetPlayer);
