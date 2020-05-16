@@ -3807,6 +3807,22 @@ void Game::playerLootCorpse(uint32_t playerId, const Position& pos, uint16_t spr
 			g_actions->useItem(player, pos, 0, corpse, false);
 		} else {
 			g_events->eventPlayerOnLoot(player, item);
+			// checar os loots
+			Tile* tile = getTile(pos);
+			if (!tile) {
+				return;
+			}
+
+			TileItemVector* itemVector = tile->getItemList();
+			if (!itemVector) {
+				return;
+			}
+
+			for (Item* tmpItem : *itemVector) {
+				if (tmpItem && tmpItem != item && item->getContainer()) {
+					g_events->eventPlayerOnLoot(player, tmpItem);
+				}
+			}
 		}
 	}
 
