@@ -3808,7 +3808,7 @@ void Game::playerLootCorpse(uint32_t playerId, const Position& pos, uint16_t spr
 		} else {
 			g_events->eventPlayerOnLoot(player, item);
 			// checar os loots
-			Tile* tile = getTile(pos);
+			Tile* tile = map.getTile(pos);
 			if (!tile) {
 				return;
 			}
