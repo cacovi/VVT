@@ -1424,6 +1424,7 @@ class Player final : public Creature, public Cylinder
 		}
 
 		uint32_t getNextActionTime() const;
+		uint32_t getNextPotionActionTime() const;
 
 		Item* getWriteItem(uint32_t& windowTextId, uint16_t& maxWriteLen);
 		void setWriteItem(Item* item, uint16_t maxWriteLen = 0);

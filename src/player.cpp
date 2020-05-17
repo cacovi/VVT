@@ -1546,8 +1546,6 @@ void Player::setNextPotionActionTask(SchedulerTask* task)
 		actionPotionTaskEvent = 0;
 	}
 
-	cancelPush();
-
 	if (task) {
 		actionPotionTaskEvent = g_scheduler.addEvent(task);
 		//resetIdleTime();
