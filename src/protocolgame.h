@@ -154,6 +154,7 @@ class ProtocolGame final : public Protocol
 
 		void parseBrowseField(NetworkMessage& msg);
 		void parseSeekInContainer(NetworkMessage& msg);
+		void parseInspectionObject(NetworkMessage& msg);
 
 		//trade methods
 		void parseRequestTrade(NetworkMessage& msg);
@@ -195,6 +196,7 @@ class ProtocolGame final : public Protocol
 		void addImbuementInfo(NetworkMessage &msg, uint32_t imbuid);
 
 		//Send functions
+		void sendItemInspection(uint16_t itemId, uint8_t itemCount, const Item* item, bool cyclopedia);
 		void sendChannelMessage(const std::string& author, const std::string& text, SpeakClasses type, uint16_t channel);
 		void sendChannelEvent(uint16_t channelId, const std::string& playerName, ChannelEvent_t channelEvent);
 		void sendClosePrivate(uint16_t channelId);
@@ -267,7 +269,7 @@ class ProtocolGame final : public Protocol
 		void sendClientCheck();
 		void sendGameNews();
 		void sendResourceBalance(uint64_t money, uint64_t bank);
-		void sendSaleItemList(const std::list<ShopInfo>& shop);
+		void sendSaleItemList(const std::vector<ShopInfo>& shop);
 		void sendMarketEnter(uint32_t depotId);
 		void updateCoinBalance();
 		void sendMarketLeave();
