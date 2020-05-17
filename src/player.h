@@ -1403,6 +1403,15 @@ class Player final : public Creature, public Cylinder
 			return nextAction <= OTSYS_TIME();
 		}
 
+		void setNextPotionAction(int64_t time) {
+			if (time > nextPotionAction) {
+				nextPotionAction = time;
+			}
+		}
+		bool canDoPotionAction() const {
+			return nextPotionAction <= OTSYS_TIME();
+		}
+
 		void setModuleDelay(uint8_t byteortype, int16_t delay) {
 			moduleDelayMap[byteortype] = OTSYS_TIME() + delay;
 		}
@@ -1563,6 +1572,7 @@ class Player final : public Creature, public Cylinder
 		void setNextWalkActionTask(SchedulerTask* task);
 		void setNextWalkTask(SchedulerTask* task);
 		void setNextActionTask(SchedulerTask* task);
+		void setNextPotionActionTask(SchedulerTask* task);
 
 		void death(Creature* lastHitCreature) final;
 		bool dropCorpse(Creature* lastHitCreature, Creature* mostDamageCreature, bool lastHitUnjustified, bool mostDamageUnjustified) final;
@@ -1645,6 +1655,7 @@ class Player final : public Creature, public Cylinder
 		int64_t lastPing;
 		int64_t lastPong;
 		int64_t nextAction = 0;
+		int64_t nextPotionAction = 0;
 		uint64_t instantRewardTokens = 0;
 		int64_t bonusRerollCount = 0;
 		uint32_t myPet = 0;
@@ -1678,6 +1689,7 @@ class Player final : public Creature, public Cylinder
 		uint32_t level = 1;
 		uint32_t magLevel = 0;
 		uint32_t actionTaskEvent = 0;
+		uint32_t actionPotionTaskEvent = 0;
 		uint32_t nextStepEvent = 0;
 		uint32_t walkTaskEvent = 0;
 		uint32_t MessageBufferTicks = 0;
