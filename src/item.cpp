@@ -2477,7 +2477,7 @@ bool Item::hasMarketAttributes() const
 				for (uint8_t slot = 0; slot < items[id].imbuingSlots; slot++) {
 					Item* item = const_cast<Item*>(this);
 					uint32_t info = item->getImbuement(slot);
-					if (info >> 8 != 0) {
+					if (info) {
 						return false;
 					}
 				}
