@@ -606,9 +606,9 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 
 			ItemMap::const_iterator it2 = itemMap.find(pid);
 			
-			for (const auto& it : player->depotLockerMap) {
-				it.second->setParent(VirtualCylinder::virtualCylinder);
-				it.second->startDecaying();
+			for (const auto& it3 : player->depotLockerMap) {
+				it3.second->setParent(VirtualCylinder::virtualCylinder);
+				it3.second->startDecaying();
 			}
 			
 			if (it2 == itemMap.end()) {
