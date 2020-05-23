@@ -501,6 +501,12 @@ ReturnValue Tile::queryAdd(int32_t, const Thing& thing, uint32_t, uint32_t tileF
 			if (hasFlag(TILESTATE_PROTECTIONZONE | TILESTATE_FLOORCHANGE | TILESTATE_TELEPORT) && !monster->isPet()) {
 				return RETURNVALUE_NOTPOSSIBLE;
 			}
+			
+			if (monster->isSummon()) {
+				if (ground->getID() >= ITEM_WALKABLE_SEA_START && ground->getID() <= ITEM_WALKABLE_SEA_END) { 
+					return RETURNVALUE_NOTPOSSIBLE;
+				}
+			}
 
 			const CreatureVector* creatures = getCreatures();
 			if (monster->canPushCreatures() && !monster->isSummon()) {
@@ -1690,10 +1696,10 @@ ReturnValue HouseTile::queryAdd(int32_t index, const Thing& thing, uint32_t coun
 		}
 		else if (const Monster* monster = creature->getMonster()) {
 			if (monster->isSummon()) {
-				if (monster->isPet() && !house->isInvited(monster->getMaster()->getPlayer())) {
+				if (!house->isInvited(monster->getMaster()->getPlayer())) {
 					return RETURNVALUE_NOTPOSSIBLE;
 				}
-				if (monster->isPet() && house->isInvited(monster->getMaster()->getPlayer()) && (hasFlag(TILESTATE_BLOCKSOLID) || (hasBitSet(FLAG_PATHFINDING, flags) && hasFlag(TILESTATE_NOFIELDBLOCKPATH)))) {
+				if (house->isInvited(monster->getMaster()->getPlayer()) && (hasFlag(TILESTATE_BLOCKSOLID) || (hasBitSet(FLAG_PATHFINDING, flags) && hasFlag(TILESTATE_NOFIELDBLOCKPATH)))) {
 					return RETURNVALUE_NOTPOSSIBLE;
 				} 
 				else {
