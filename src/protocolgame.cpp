@@ -3349,7 +3349,7 @@ void ProtocolGame::sendFightModes()
 	writeToOutputBuffer(msg);
 }
 
-void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos, int32_t stackpos, bool isLogin, std::string newName/* = ""*/)
+void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos, int32_t stackpos, bool isLogin)
 {
 	if (!canSee(pos)) {
 		return;
@@ -3367,10 +3367,7 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos
 		bool known;
 		uint32_t removedKnown;
 		checkCreatureAsKnown(creature->getID(), known, removedKnown);
-		if (newName != "") 
-			AddCreature(msg, creature, known, removedKnown, newName);
-		else
-			AddCreature(msg, creature, known, removedKnown);
+		AddCreature(msg, creature, known, removedKnown);
 		writeToOutputBuffer(msg);
 
 		if (isLogin) {
@@ -4037,7 +4034,7 @@ void ProtocolGame::sendModalWindow(const ModalWindow& modalWindow)
 }
 
 ////////////// Add common messages
-void ProtocolGame::AddCreature(NetworkMessage& msg, const Creature* creature, bool known, uint32_t remove, std::string newName/* = ""*/)
+void ProtocolGame::AddCreature(NetworkMessage& msg, const Creature* creature, bool known, uint32_t remove)
 {
 	CreatureType_t creatureType = creature->getType();
 
@@ -4061,11 +4058,7 @@ void ProtocolGame::AddCreature(NetworkMessage& msg, const Creature* creature, bo
 			}
 		}
 
-		std::string creature_name = creature->getName();
-			if (newName != "") {
-				creature_name = newName;
-			} else if (const Monster* monster = creature->getMonster()) {
-				const std::string newNameMonster = monster->getNewName();
+		msg.addString(creature->getName());
 	}
 
 	if (creature->isHealthHidden()) {
@@ -4678,32 +4671,6 @@ void ProtocolGame::reloadCreature(const Creature* creature)
 		AddCreature(msg, creature, false, 0);
 	} else {
 		sendAddCreature(creature, creature->getPosition(), stackpos, false);
-	}
-
-	writeToOutputBuffer(msg);
-}
-
-void ProtocolGame::reloadCreature(const Creature* creature, const std::string newName)
-{
-	if (!canSee(creature))
-		return;
-
-	uint32_t stackpos = creature->getTile()->getClientIndexOfCreature(player, creature);
-
-	if (stackpos >= 10)
-		return;
-
-	NetworkMessage msg;
-
-	std::unordered_set<uint32_t>::iterator it = std::find(knownCreatureSet.begin(), knownCreatureSet.end(), creature->getID());
-	if(it != knownCreatureSet.end()) {
-		RemoveTileThing(msg, creature->getPosition(), stackpos);
-		msg.addByte(0x6A);
-		msg.addPosition(creature->getPosition());
-		msg.addByte(stackpos);
-		AddCreature(msg, creature, false, creature->getID(), newName);
-	} else {
-		sendAddCreature(creature, creature->getPosition(), stackpos, false, newName);
 	}
 
 	writeToOutputBuffer(msg);

@@ -323,7 +323,7 @@ class ProtocolGame final : public Protocol
 		void sendRemoveTileCreature(const Creature* creature, const Position& pos, uint32_t stackpos);
 		void sendUpdateTile(const Tile* tile, const Position& pos);
 
-		void sendAddCreature(const Creature* creature, const Position& pos, int32_t stackpos, bool isLogin, std::string newName = "");
+		void sendAddCreature(const Creature* creature, const Position& pos, int32_t stackpos, bool isLogin);
 		void sendMoveCreature(const Creature* creature, const Position& newPos, int32_t newStackPos,
 							  const Position& oldPos, int32_t oldStackPos, bool teleport);
 
@@ -364,7 +364,7 @@ class ProtocolGame final : public Protocol
 		void GetMapDescription(int32_t x, int32_t y, int32_t z,
 		                       int32_t width, int32_t height, NetworkMessage& msg);
 
-		void AddCreature(NetworkMessage& msg, const Creature* creature, bool known, uint32_t remove, std::string newName = "");
+		void AddCreature(NetworkMessage& msg, const Creature* creature, bool known, uint32_t remove);
 		void AddPlayerStats(NetworkMessage& msg);
 		void AddOutfit(NetworkMessage& msg, const Outfit_t& outfit, bool addMount = true);
 		void AddPlayerSkills(NetworkMessage& msg);
@@ -385,9 +385,6 @@ class ProtocolGame final : public Protocol
 
 		//otclient
 		void parseExtendedOpcode(NetworkMessage& msg);
-		
-		//custom
-		void reloadCreature(const Creature* creature, const std::string newName);
 		
 		//reloadCreature
 		void reloadCreature(const Creature* creature);
