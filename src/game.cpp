@@ -221,7 +221,7 @@ bool Game::loadItemsPrice()
 	std::ostringstream query, query2;
 	query << "SELECT DISTINCT `itemtype` FROM `market_offers`;";
 
-	Database& db = Database::getInstance();	
+	Database& db = Database::getInstance();
 	DBResult_ptr result = db.storeQuery(query.str());
 	if (!result) {
 		return false;
@@ -1460,16 +1460,16 @@ ReturnValue Game::internalRemoveItem(Item* item, int32_t count /*= -1*/, bool te
 		cylinder->removeThing(item, count);
 
 		if (item->isRemoved()) {
-			ReleaseItem(item);
+			item->onRemoved();
 			if (item->canDecay()) {
 				decayItems->remove(item);
 			}
+			ReleaseItem(item);
 		}
 
 		cylinder->postRemoveNotification(item, nullptr, index);
 	}
 
-	item->onRemoved();
 	return RETURNVALUE_NOERROR;
 }
 
