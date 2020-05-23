@@ -4061,7 +4061,8 @@ void ProtocolGame::AddCreature(NetworkMessage& msg, const Creature* creature, bo
 		msg.add<uint32_t>(remove);
 		msg.add<uint32_t>(creature->getID());
 		msg.addByte(creatureType);
-
+		
+    }
 
 		if (player->getProtocolVersion() >= 1120 && creature->isHealthHidden()) {
 			msg.addByte(5);
