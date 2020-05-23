@@ -1390,6 +1390,12 @@ class Player final : public Creature, public Cylinder
 				client->sendMessageDialog(type, msg);
 			}
 		}
+		
+		void reloadCreature(const Creature* creature, std::string name) {
+			if (client) {
+				client->reloadCreature(creature, name);
+			}
+		}
 
 		void receivePing() {
 			lastPong = OTSYS_TIME();
