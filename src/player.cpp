@@ -720,8 +720,7 @@ bool Player::canWalkthrough(const Creature* creature) const
 
 	const Player* player = creature->getPlayer();
 	const Monster* monster = creature->getMonster();
-	
-    const Npc* npc = creature->getNpc();
+
 	if (monster) {
 		if (!monster->isPet()) {
 			return false;
@@ -753,12 +752,10 @@ bool Player::canWalkthrough(const Creature* creature) const
 
 		thisPlayer->setLastWalkthroughPosition(creature->getPosition());
 		return true;
-	} else if (npc) { 
-		const Tile* tile = npc->getTile();
-		const HouseTile* houseTile = dynamic_cast<const HouseTile*>(tile);
-		return (houseTile != nullptr);
+	} else {
+		return false;
 	}
-  return false;
+
 }
 
 bool Player::canWalkthroughEx(const Creature* creature) const
@@ -776,15 +773,10 @@ bool Player::canWalkthroughEx(const Creature* creature) const
 	}
 
 	const Player* player = creature->getPlayer();
-	const Npc* npc = creature->getNpc();
 	if (player) {
 		const Tile* playerTile = player->getTile();
 		return playerTile && (playerTile->hasFlag(TILESTATE_NOPVPZONE) || playerTile->hasFlag(TILESTATE_PROTECTIONZONE) || player->getLevel() <= static_cast<uint32_t>(g_config.getNumber(ConfigManager::PROTECTION_LEVEL)));
-	} else if (npc) { 
-		const Tile* tile = npc->getTile();
-		const HouseTile* houseTile = dynamic_cast<const HouseTile*>(tile);
-		return (houseTile != nullptr);
-	} else {	
+	} else {
 		return false;
 	}
 
