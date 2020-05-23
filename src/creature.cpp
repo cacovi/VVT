@@ -473,6 +473,8 @@ void Creature::onCreatureMove(Creature* creature, const Tile* newTile, const Pos
 			//check if any of our summons is out of range (+/- 1 floors or 7/30 tiles away)
 			std::forward_list<Creature*> despawnList;
 			for (Creature* summon : summons) {
+				const Position& pos = summon->getPosition();
+				int32_t distance = summon->getMonster()->isPet() ? 7 : 30;
 				if (summon->getMonster()->isPet() && (Position::getDistanceZ(newPos, pos) >= 1 || (std::max<int32_t>(Position::getDistanceX(newPos, pos), Position::getDistanceY(newPos, pos)) >= 15))) {
 					g_game.internalTeleport(summon, summon->getMaster()->getPosition(), true);
 				} else if (!summon->getMonster()->isPet() && (Position::getDistanceZ(newPos, pos) >= 2 || (std::max<int32_t>(Position::getDistanceX(newPos, pos), Position::getDistanceY(newPos, pos)) >= 30))) {
