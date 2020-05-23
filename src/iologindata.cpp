@@ -515,7 +515,6 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 				Container* container = it2->second.first->getContainer();
 				if (container) {
 					container->internalAddThing(item);
-					item->startDecaying();
 				}
 			}
 		}
@@ -563,6 +562,7 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 				Container* container = it2->second.first->getContainer();
 				if (container) {
 					container->internalAddThing(item);
+					item->startDecaying();
 				}
 			}
 		}
