@@ -2432,7 +2432,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Creature", "remove", LuaScriptInterface::luaCreatureRemove);
 	registerMethod("Creature", "teleportTo", LuaScriptInterface::luaCreatureTeleportTo);
 	registerMethod("Creature", "say", LuaScriptInterface::luaCreatureSay);
-	registerMethod("Creature", "reload", LuaScriptInterface::luaCreatureReload);
 
 	registerMethod("Creature", "getDamageMap", LuaScriptInterface::luaCreatureGetDamageMap);
 
@@ -8327,28 +8326,6 @@ int LuaScriptInterface::luaCreatureTeleportTo(lua_State* L)
 		}
 	}
 	pushBoolean(L, true);
-	return 1;
-}
-
-int LuaScriptInterface::luaCreatureReload(lua_State* L)
-{
-	// creature:reload()
-	Creature* creature = getUserdata<Creature>(L, 1);
-	if (!creature) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	const Position& position = creature->getPosition();
-	SpectatorHashSet spectators;
-	g_game.map.getSpectators(spectators, position, false, true); // 3 parameter is multifloor, check if there's need.
-	for (Creature* spectator : spectators) {
-		Player* tmpPlayer = spectator->getPlayer();
-		if (tmpPlayer) {
-			tmpPlayer->reloadCreature(creature, "");
-		}
-	}
-
 	return 1;
 }
 
