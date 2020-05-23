@@ -1772,6 +1772,7 @@ void setScheduledSaleUpdate(bool scheduled) {
 		bool isConnecting = false;
 		bool addAttackSkillPoint = false;
 		bool inventoryAbilities[CONST_SLOT_LAST + 1] = {};
+		bool tradeOwner = false;
 		bool scheduledSaleUpdate = false;
 
 		static uint32_t playerAutoID;
