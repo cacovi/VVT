@@ -81,6 +81,7 @@ void House::setOwner(uint32_t guid, bool updateDatabase/* = true*/, Player* play
 
 		//clean access lists
 		owner = 0;
+		ownerAccountId = 0;
 		setAccessList(SUBOWNER_LIST, "");
 		setAccessList(GUEST_LIST, "");
 
@@ -98,6 +99,7 @@ void House::setOwner(uint32_t guid, bool updateDatabase/* = true*/, Player* play
 		if (!name.empty()) {
 			owner = guid;
 			ownerName = name;
+			ownerAccountId = IOLoginData::getAccountIdByPlayerName(name);
 		}
 	}
 
@@ -127,6 +129,12 @@ AccessHouseLevel_t House::getHouseAccessLevel(const Player* player)
 {
 	if (!player) {
 		return HOUSE_OWNER;
+	}
+	
+	if (g_config.getBoolean(ConfigManager::HOUSE_OWNED_BY_ACCOUNT)) {
+		if (ownerAccountId == player->getAccount()) {
+			return HOUSE_OWNER;
+		}
 	}
 
 	if (player->hasFlag(PlayerFlag_CanEditHouses)) {
