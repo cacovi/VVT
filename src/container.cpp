@@ -430,7 +430,8 @@ ReturnValue Container::queryMaxCount(int32_t index, const Thing& thing, uint32_t
 			//Iterate through every item and check how much free stackable slots there is.
 			uint32_t slotIndex = 0;
 			for (Item* containerItem : itemlist) {
-				if (queryAdd(slotIndex++, *item, count, flags) == RETURNVALUE_NOERROR) {
+				if (containerItem != item && containerItem->equals(item) && containerItem->getItemCount() < 100) {
+					if (queryAdd(slotIndex++, *item, count, flags) == RETURNVALUE_NOERROR) {
 						n += 100 - containerItem->getItemCount();
 					}
 				}
