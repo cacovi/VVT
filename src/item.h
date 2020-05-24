@@ -1019,6 +1019,7 @@ class Item : virtual public Thing
 		virtual void onTradeEvent(TradeEvents_t, Player*) {}
 
 		virtual void startDecaying();
+		virtual void stopDecaying();
 
 		void setLoadedFromMap(bool value) {
 			loadedFromMap = value;

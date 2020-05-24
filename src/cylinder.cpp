@@ -69,3 +69,8 @@ void Cylinder::startDecaying()
 {
 	//
 }
+
+void Cylinder::stopDecaying()
+{
+	//
+}

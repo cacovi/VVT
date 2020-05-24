@@ -205,6 +205,7 @@ class Cylinder : virtual public Thing
 		virtual void internalAddThing(uint32_t index, Thing* thing);
 
 		virtual void startDecaying();
+		virtual void stopDecaying();
 };
 
 class VirtualCylinder final : public Cylinder
