@@ -113,6 +113,8 @@ enum AttrTypes_t {
 	ATTR_CUSTOM_ATTRIBUTES = 39,
 
 	ATTR_QUICKLOOT = 40,
+	ATTR_CUSTOM_ATTRIBUTES = 41,
+	ATTR_DECAY_TIMESTAMP = 42,
 };
 
 enum Attr_ReadValue {
@@ -222,6 +224,13 @@ class ItemAttributes
 		}
 		ItemDecayState_t getDecaying() const {
 			return static_cast<ItemDecayState_t>(getIntAttr(ITEM_ATTRIBUTE_DECAYSTATE));
+		}
+		
+		void setDecayTimestamp(int64_t timestamp) {
+			setIntAttr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP, timestamp);
+		}
+		int64_t getDecayTimestamp() const {
+			return getIntAttr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP);
 		}
 
 		struct CustomAttribute
@@ -608,6 +617,16 @@ class Item : virtual public Thing
 		void setStrAttr(itemAttrTypes type, const std::string& value) {
 			getAttributes()->setStrAttr(type, value);
 		}
+		
+		int64_t getInt64Attr(itemAttrTypes type) const {
+			if (!attributes) {
+				return 0;
+			}
+			return attributes->getIntAttr(type);
+		}
+		void setInt64Attr(itemAttrTypes type, int64_t value) {
+			getAttributes()->setIntAttr(type, value);
+		}
 
 		int32_t getIntAttr(itemAttrTypes type) const {
 			if (!attributes) {
@@ -805,6 +824,22 @@ class Item : virtual public Thing
 			}
 			return getIntAttr(ITEM_ATTRIBUTE_DURATION);
 		}
+		
+		uint32_t getDurationLeft() const {
+			if (!attributes) {
+				return 0;
+			}
+
+			if (items[id].decayType == DECAY_TYPE_TIMESTAMP) {
+				if (getInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP) > OTSYS_TIME()) {
+					return getInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP) - OTSYS_TIME();
+				} else {
+					return 0;
+				}
+			} else {
+				return getIntAttr(ITEM_ATTRIBUTE_DURATION);
+			}
+		}
 
 		void setDecaying(ItemDecayState_t decayState) {
 			setIntAttr(ITEM_ATTRIBUTE_DECAYSTATE, decayState);
@@ -814,6 +849,16 @@ class Item : virtual public Thing
 				return DECAYING_FALSE;
 			}
 			return static_cast<ItemDecayState_t>(getIntAttr(ITEM_ATTRIBUTE_DECAYSTATE));
+		}
+		
+		void setDecayTimestamp(int64_t timestamp) {
+			setInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP, timestamp);
+		}
+		int64_t getDecayTimestamp() const {
+			if (!attributes) {
+				return 0;
+			}
+			return getInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP);
 		}
 
 		static std::vector<std::pair<std::string, std::string>> getDescriptions(const ItemType& it, const Item* item = nullptr);
@@ -999,9 +1044,13 @@ class Item : virtual public Thing
 		void setUniqueId(uint16_t n);
 
 		void setDefaultDuration() {
-			uint32_t duration = getDefaultDuration();
-			if (duration != 0) {
-				setDuration(duration);
+			if (items[id].decayType == DECAY_TYPE_NORMAL) {
+				uint32_t duration = getDefaultDuration();
+				if (duration != 0) {
+					setDuration(duration);
+				}
+			} else if (items[id].decayType == DECAY_TYPE_TIMESTAMP) {
+				setDecayTimestamp(OTSYS_TIME() + getDefaultDuration());
 			}
 		}
 		uint32_t getDefaultDuration() const {
