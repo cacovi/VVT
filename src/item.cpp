@@ -287,7 +287,6 @@ void Item::setID(uint16_t newid)
 	uint32_t newDuration = it.decayTime * 1000;
 
 	if (newDuration == 0 && !it.stopTime && it.decayTo < 0) {
-		g_game.stopDecay(this);
 		removeAttribute(ITEM_ATTRIBUTE_DECAYSTATE);
 		removeAttribute(ITEM_ATTRIBUTE_DURATION);
 	}
@@ -2454,13 +2453,6 @@ ItemAttributes::Attribute& ItemAttributes::getAttr(itemAttrTypes type)
 void Item::startDecaying()
 {
 	g_game.startDecay(this);
-}
-
-void Item::stopDecaying()
-{
-	if (items[id].decayType != DECAY_TYPE_TIMESTAMP) {
-		g_game.stopDecay(this);
-	}
 }
 
 bool Item::hasMarketAttributes() const

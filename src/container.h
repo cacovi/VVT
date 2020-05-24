@@ -167,7 +167,6 @@ class Container : public Item, public Cylinder
 		void internalAddThing(Thing* thing) final;
 		void internalAddThing(uint32_t index, Thing* thing) final;
 		void startDecaying() final;
-		void stopDecaying() override final;
 
 	private:
 		void onAddContainerItem(Item* item);
