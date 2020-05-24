@@ -1323,7 +1323,7 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 		}
 	}
 
-	if (moveItem && moveItem->getDurationLeft() > 0) {
+	if (moveItem && moveItem->getDuration() > 0) {
 		if (moveItem->getDecaying() != DECAYING_TRUE) {
 			moveItem->incrementReferenceCounter();
 			moveItem->setDecaying(DECAYING_TRUE);
@@ -1415,7 +1415,7 @@ ReturnValue Game::internalAddItem(Cylinder* toCylinder, Item* item, int32_t inde
 		}
 	}
 
-	if (item->getDurationLeft() > 0) {
+	if (item->getDuration() > 0) {
 		item->incrementReferenceCounter();
 		item->setDecaying(DECAYING_TRUE);
 		g_game.toDecayItems.push_front(item);
@@ -1811,7 +1811,7 @@ Item* Game::transformItem(Item* item, uint16_t newId, int32_t newCount /*= -1*/)
 	cylinder->postRemoveNotification(item, cylinder, itemIndex);
 	ReleaseItem(item);
 
-	if (newItem->getDurationLeft() > 0) {
+	if (newItem->getDuration() > 0) {
 		if (newItem->getDecaying() != DECAYING_TRUE) {
 			newItem->incrementReferenceCounter();
 			newItem->setDecaying(DECAYING_TRUE);
@@ -5114,7 +5114,7 @@ void Game::startDecay(Item* item)
 		return;
 	}
 
-	if (item->getDurationLeft() > 0) {
+	if (item->getDuration() > 0) {
 		item->incrementReferenceCounter();
 		item->setDecaying(DECAYING_TRUE);
 		toDecayItems.push_front(item);
@@ -5188,15 +5188,11 @@ void Game::checkDecay()
 			continue;
 		}
 
-		int32_t duration = item->getDurationLeft();
+		int32_t duration = item->getDuration();
+		int32_t decreaseTime = std::min<int32_t>(EVENT_DECAYINTERVAL * EVENT_DECAY_BUCKETS, duration);
 
-		const ItemType& itemType = Item::items[item->getID()];
-		if (itemType.decayType == DECAY_TYPE_NORMAL) {
-			int32_t decreaseTime = std::min<int32_t>(EVENT_DECAYINTERVAL * EVENT_DECAY_BUCKETS, duration);
-
-			duration -= decreaseTime;
-			item->decreaseDuration(decreaseTime);
-		}
+		duration -= decreaseTime;
+		item->decreaseDuration(decreaseTime);
 
 		if (duration <= 0) {
 			it = decayItems[bucket].erase(it);

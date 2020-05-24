@@ -209,7 +209,7 @@ Item* Item::clone() const
 	Item* item = Item::CreateItem(id, count);
 	if (attributes) {
 		item->attributes.reset(new ItemAttributes(*attributes));
-		if (item->getDurationLeft() > 0) {
+		if (item->getDuration() > 0) {
 			item->incrementReferenceCounter();
 			item->setDecaying(DECAYING_TRUE);
 			g_game.toDecayItems.push_front(item);
@@ -295,11 +295,9 @@ void Item::setID(uint16_t newid)
 		removeAttribute(ITEM_ATTRIBUTE_CORPSEOWNER);
 	}
 
-	if (it.decayType == DECAY_TYPE_NORMAL) {
-		if (newDuration > 0 && (!prevIt.stopTime || !hasAttribute(ITEM_ATTRIBUTE_DURATION))) {
-			setDecaying(DECAYING_FALSE);
-			setDuration(newDuration);
-		}
+	if (newDuration > 0 && (!prevIt.stopTime || !hasAttribute(ITEM_ATTRIBUTE_DURATION))) {
+		setDecaying(DECAYING_FALSE);
+		setDuration(newDuration);
 	}
 }
 
@@ -667,16 +665,6 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 			setIntAttr(ITEM_ATTRIBUTE_WRAPCONTAINER, wrapContainer);
 			break;
 		}
-		
-		case ATTR_DECAY_TIMESTAMP: {
-			int64_t decayTimestamp;
-			if (!propStream.read<int64_t>(decayTimestamp)) {
-				return ATTR_READ_ERROR;
-			}
-
-			setInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP, decayTimestamp);
-			break;
-		}
 
 		//these should be handled through derived classes
 		//If these are called then something has changed in the items.xml since the map was saved
@@ -896,11 +884,6 @@ void Item::serializeAttr(PropWriteStream& propWriteStream) const
 	if (hasAttribute(ITEM_ATTRIBUTE_SHOOTRANGE)) {
 		propWriteStream.write<uint8_t>(ATTR_SHOOTRANGE);
 		propWriteStream.write<uint8_t>(getIntAttr(ITEM_ATTRIBUTE_SHOOTRANGE));
-	}
-	
-	if (hasAttribute(ITEM_ATTRIBUTE_DECAY_TIMESTAMP)) {
-		propWriteStream.write<uint8_t>(ATTR_DECAY_TIMESTAMP);
-		propWriteStream.write<int64_t>(getInt64Attr(ITEM_ATTRIBUTE_DECAY_TIMESTAMP));
 	}
 
 	if (hasAttribute(ITEM_ATTRIBUTE_SPECIAL)) {
@@ -2108,8 +2091,8 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance,
 	}
 
 	if (it.showDuration) {
-		if (item && (item->hasAttribute(ITEM_ATTRIBUTE_DURATION) || item->hasAttribute(ITEM_ATTRIBUTE_DECAY_TIMESTAMP))) {
-			uint32_t duration = item->getDurationLeft() / 1000;
+		if (item && item->hasAttribute(ITEM_ATTRIBUTE_DURATION)) {
+			uint32_t duration = item->getDuration() / 1000;
 			s << " that will expire in ";
 
 			if (duration >= 86400) {
