@@ -523,6 +523,8 @@ void AccessList::addExpression(const std::string& expression)
 		outExp.push_back(c);
 	}
 
+	replaceString(outExp, "*", ".*");
+	replaceString(outExp, "?", ".?");
 	replaceString(outExp, "0", "");
 	replaceString(outExp, "1", "");
 	replaceString(outExp, "2", "");
@@ -533,7 +535,6 @@ void AccessList::addExpression(const std::string& expression)
 	replaceString(outExp, "7", "");
 	replaceString(outExp, "8", "");
 	replaceString(outExp, "9", "");
-
 	replaceString(outExp, "**", ".*");
 	replaceString(outExp, "*", ".*");
 	replaceString(outExp, "?", ".?");
