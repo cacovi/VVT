@@ -706,7 +706,7 @@ bool ConditionAttributes::setParam(ConditionParam_t param, int32_t value)
 			statsPercent[STAT_CAPACITY] = std::max<int32_t>(0, value);
 			return true;
 		}
-
+		
 		case CONDITION_PARAM_AGGRESSIVE: {
 			aggressive = (value != 0);
 			return true;
