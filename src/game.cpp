@@ -692,7 +692,7 @@ void Game::playerMoveThing(uint32_t playerId, const Position& fromPos,
 		return;
 	}
 
-	if (player->hasCondition(CONDITION_EXHAUST, 1)) {
+	if (player->hasCondition(CONDITION_EXHAUST, 7)) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, "You can't move item very fast.");
 		return;
 	}
@@ -738,7 +738,7 @@ void Game::playerMoveThing(uint32_t playerId, const Position& fromPos,
 
 		playerMoveItem(player, fromPos, spriteId, fromStackPos, toPos, count, thing->getItem(), toCylinder);
 	}
-	if (Condition* moveItem = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 50, 0, false, 1)) {
+	if (Condition* moveItem = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 50, 0, false, 7)) {
 		player->addCondition(moveItem);
 	}
 }
@@ -2853,12 +2853,12 @@ void Game::playerRequestTrade(uint32_t playerId, const Position& pos, uint8_t st
 		return;
 	}
 
-	if (player->hasCondition(CONDITION_EXHAUST, 8)) {
+	if (player->hasCondition(CONDITION_EXHAUST, 7)) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, "You can't trade very fast.");
 		return;
 	}
 
-	if (Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 300, 0, false, 8)) {
+	if (Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 300, 0, false, 7)) {
 		player->addCondition(conditiontrade);
 	}
 
@@ -3359,7 +3359,7 @@ void Game::playerLookAt(uint32_t playerId, const Position& pos, uint8_t stackPos
 		return;
 	}
 
-	if (player->hasCondition(CONDITION_EXHAUST, 7)) {
+	if (player->hasCondition(CONDITION_EXHAUST, 2)) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, "You can't look very fast.");
 		return;
 	}
@@ -3682,7 +3682,7 @@ void Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit)
 		return;
 	}
 
-	if (Condition* conditionoutfit = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 100, 0, false, 7)) {
+	if (Condition* conditionoutfit = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 100, 0, false, 2)) {
 		player->addCondition(conditionoutfit);
 	}
 
@@ -4096,12 +4096,12 @@ void Game::playerSpeakToNpc(Player* player, const std::string& text)
 {
 	SpectatorHashSet spectators;
 	map.getSpectators(spectators, player->getPosition());
-	if (player->hasCondition(CONDITION_EXHAUST, 2)) {
+	if (player->hasCondition(CONDITION_EXHAUST, 1)) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, "You can't speak very fast.");
 		return;
 	}
 
-	if (Condition* conditionnpc = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 100, 0, false, 2)) {
+	if (Condition* conditionnpc = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 100, 0, false, 1)) {
 		player->addCondition(conditionnpc);
 	}
 
