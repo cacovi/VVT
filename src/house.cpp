@@ -515,15 +515,17 @@ void AccessList::addExpression(const std::string& expression)
 	std::string outExp;
 	outExp.reserve(expression.length());
 
-	std::string metachars = ".[{}()\\+|^$";
+	std::string metachars = ".[{}()\\+|^$*?";
 	for (const char c : expression) {
 		if (metachars.find(c) != std::string::npos) {
-			outExp.push_back('\\');
+			outExp += "";
 		}
 		outExp.push_back(c);
 	}
 
 	replaceString(outExp, "*", ".*");
+	replaceString(outExp, "*", "");
+	replaceString(outExp, "?", "");
 	replaceString(outExp, "?", ".?");
 	replaceString(outExp, "0", "");
 	replaceString(outExp, "1", "");
